@@ -22,7 +22,7 @@ public class CartController {
     private final CartFacade cartFacade;
     private final CartService cartService;
 
-    // ✅ 응답 타입 변경 (List -> CartResponse)
+    // 응답 타입 변경 (List -> CartResponse)
     @GetMapping
     public ResponseEntity<CartResponse> getItems(@AuthenticationPrincipal Long memberId) {
         return ResponseEntity.ok(cartService.getCartItems(memberId));
