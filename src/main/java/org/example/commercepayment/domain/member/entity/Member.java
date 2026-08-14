@@ -30,7 +30,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 13)
     private String phoneNumber;
 
-    private Long point;
+    @Column
+    private int point;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -38,7 +39,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Member(String email, String password, String name, String phoneNumber, Long point) {
+    public Member(String email, String password, String name, String phoneNumber, int point) {
         this.email = email;
         this.password = password;
         this.name = name;
