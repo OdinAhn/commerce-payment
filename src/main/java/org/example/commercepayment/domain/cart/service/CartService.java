@@ -1,0 +1,87 @@
+package org.example.commercepayment.domain.cart.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.commercepayment.domain.cart.dto.CartItemResponse;
+import org.example.commercepayment.domain.cart.entity.CartItem;
+import org.example.commercepayment.domain.cart.repository.CartItemRepository;
+import org.example.commercepayment.global.error.BusinessException;
+import org.example.commercepayment.global.error.ErrorCode;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class CartService {
+
+    private final CartItemRepository cartItemRepository;
+
+    public List<CartItemResponse> getCartItems(Long memberId) {
+        return cartItemRepository.findByMemberId(memberId).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public Long addItem(CartItem cartItem) {
+        Optional<CartItem> existing = cartItemRepository.findByMember_IdAndProduct_Id(
+                cartItem.getMemberId(), cartItem.getProductId()
+        );
+        if (existing.isPresent()) {
+            CartItem found = existing.get();
+            found.addQuantity(cartItem.getQuantity());
+            return found.getId();
+        } else {
+            return cartItemRepository.save(cartItem).getId();
+        }
+    }
+
+    @Transactional
+    public void updateQuantity(Long memberId, Long itemId, int quantity) {
+        CartItem item = cartItemRepository.findById(itemId)
+                .filter(ci -> ci.getMemberId().equals(memberId))
+                .orElseThrow(() -> new BusinessException(ErrorCode.CART_ITEM_NOT_FOUND));
+        item.changeQuantity(quantity);
+    }
+
+    @Transactional
+    public void removeItem(Long memberId, Long itemId) {
+        int deleted = cartItemRepository.deleteByIdAndMember_Id(itemId, memberId);
+        if (deleted == 0) {
+            throw new BusinessException(ErrorCode.CART_ITEM_NOT_FOUND);
+        }
+    }
+
+    public List<CartItem> findCartEntities(Long memberId) {
+        return cartItemRepository.findByMemberId(memberId);
+    }
+
+    public List<CartItem> findCartEntitiesByIds(Long memberId, List<Long> cartItemIds) {
+        return cartItemRepository.findByIdAndMember_IdWithProduct(cartItemIds, memberId);
+    }
+
+    public void clearCartItems(List<Long> orderedItemIds, Long memberId) {
+        int deleted = cartItemRepository.deleteAllByIdInAndMemberId(orderedItemIds, memberId);
+        if (deleted != orderedItemIds.size()) {
+            log.warn("장바구니 삭제 불일치: expected={}, actual={}, memberId={}",
+                    orderedItemIds.size(), deleted, memberId);
+        }
+    }
+
+    private CartItemResponse toResponse(CartItem item) {
+        return new CartItemResponse(
+                item.getId(),
+                item.getProduct().getId(),
+                item.getProduct().getName(),
+                item.getProduct().getPrice(),
+                item.getQuantity(),
+                item.getProduct().getStock()
+        );
+    }
+
+}
