@@ -16,6 +16,14 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
+        ErrorCode code = e.getErrorCode();
+        return ResponseEntity.status(code.getStatus())
+                .body(ApiResponse.error(code, e.getMessage()));
+    }
+
+}
     // Arg 에러 핸들
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
