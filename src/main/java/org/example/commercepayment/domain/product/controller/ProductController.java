@@ -27,7 +27,7 @@ public class ProductController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "LATEST") String sort
     ) {
-        // 기획서 시나리오 #4: 잘못된 입력에 대한 4xx 에러 처리
+        // 잘못된 입력에 대한 4xx 에러 처리
         if (page < 1) {
             throw new IllegalArgumentException("페이지 번호는 1 이상이어야 합니다.");
         }

@@ -1,10 +1,12 @@
 package org.example.commercepayment.domain.product.entity;
 
-import com.sparta.paymentsystem.global.entity.BaseTimeEntity;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import org.example.commercepayment.global.entity.BaseTimeEntity;
 import org.example.commercepayment.global.error.BusinessException;
 import org.example.commercepayment.global.error.ErrorCode;
 
@@ -31,11 +33,11 @@ public class Product extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // ✅ 추가된 필드: 카테고리
+    // 추가된 필드: 카테고리
     @Column(nullable = false, length = 100)
     private String category;
 
-    // ✅ 추가된 필드: 판매 상태 (ON_SALE, SOLD_OUT, DISCONTINUED)
+    // 추가된 필드: 판매 상태 (ON_SALE, SOLD_OUT, DISCONTINUED)
     @Column(nullable = false, length = 30)
     private String salesStatus;
 
