@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.commercepayment.global.error.BusinessException;
+import org.example.commercepayment.global.error.ErrorCode;
 
 
 @Entity
@@ -53,15 +55,30 @@ public class Product extends BaseTimeEntity {
     }
 
     // 비즈니스 로직: 재고 변경 시 자동으로 상태 업데이트
-    public void decreaseStock(int quantity) {
-        if (this.stock - quantity < 0) {
-            throw new IllegalArgumentException("재고가 부족합니다.");
+    public void deductStock(int quantity) {
+        if (quantity <= 0) {
+            throw new BusinessException(ErrorCode.INVALID_QUANTITY); // 커스텀 예외 적용
+        }
+        if (this.stock < quantity) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
         }
         this.stock -= quantity;
 
         // 재고가 0이 되면 자동으로 품절 상태로 변경
         if (this.stock == 0 && "ON_SALE".equals(this.salesStatus)) {
             this.salesStatus = "SOLD_OUT";
+        }
+    }
+
+    public void restoreStock(int quantity) {
+        if (quantity <= 0) {
+            throw new BusinessException(ErrorCode.INVALID_QUANTITY);
+        }
+        this.stock += quantity;
+
+        // (선택) 재고가 복구되면 다시 판매중으로 변경할지 여부 결정
+        if (this.stock > 0 && "SOLD_OUT".equals(this.salesStatus)) {
+            this.salesStatus = "ON_SALE";
         }
     }
 }
