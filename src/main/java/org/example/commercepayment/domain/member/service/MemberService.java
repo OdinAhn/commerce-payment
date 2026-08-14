@@ -18,12 +18,17 @@ public class MemberService {
     // 내 정보 보기
     @Transactional(readOnly = true)
     public GetMeResponse getOne (Long id) {
-
-        Member member = memberRepository.findById(id).orElseThrow(
-                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-
+        // findById메서드를 만들었기 때문에 코드를 깔끔하게 수정
+        Member member = findById(id);
         return GetMeResponse.from(member);
     }
 
+    // CartFacade 혹은 다른 서비스 등 에서 멤버 엔티티가 필요할 때 사용할 메서드
+    @Transactional(readOnly = true)
+    public Member findById(Long id) {
+        return memberRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+        );
+    }
 
 }

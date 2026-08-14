@@ -24,6 +24,6 @@ public class MemberController {
 
         GetMeResponse result = memberService.getOne(0L);
 
-        return ResponseEntity.ok(ApiResponse.success(result));
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

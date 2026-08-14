@@ -1,10 +1,12 @@
 package org.example.commercepayment.domain.product.entity;
 
-import com.sparta.paymentsystem.global.entity.BaseTimeEntity;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import org.example.commercepayment.global.entity.BaseTimeEntity;
 import org.example.commercepayment.global.error.BusinessException;
 import org.example.commercepayment.global.error.ErrorCode;
 
