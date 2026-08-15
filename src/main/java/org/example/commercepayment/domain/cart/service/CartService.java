@@ -47,7 +47,7 @@ public class CartService {
     public Long addItem(CartItem cartItem) {
         // 1. 해당 회원이 똑같은 상품을 이미 장바구니에 담아두었는지 DB에서 조회합니다.
         // Optional은 결과가 '있을 수도 있고, 없을 수도 있음'을 안전하게 다루기 위한 자바 문법입니다.
-        Optional<CartItem> existing = cartItemRepository.findByMember_IdAndProduct_Id(
+        Optional<CartItem> existing = cartItemRepository.findByCart_Member_IdAndProduct_Id(
                 cartItem.getMemberId(), cartItem.getProductId()
         );
 
