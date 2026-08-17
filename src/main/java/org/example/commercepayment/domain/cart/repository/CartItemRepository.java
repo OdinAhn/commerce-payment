@@ -24,7 +24,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     // 선택된 장바구니 상품을 정보와 함께 조회
     // - memberId 조건: 다른 회원의 장바구니 상품을 넘겨도 조회되지 않게 검증
     // - JOIN FETCH: 주문서에서 상품명/가격을 써야 하므로 n+1 방지
-    // #선택된 장바구니 아이템만 조회하는 메서드
+    // 선택된 장바구니 아이템만 조회하는 메서드
     @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.id IN :ids AND ci.member.id = :memberId")
     List<CartItem> findByIdAndMember_IdWithProduct(@Param("ids") List<Long> ids, @Param("memberId") Long memberId);
 
