@@ -48,5 +48,14 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.ok(orderFacade.getOrder(memberId, orderId)));
     }
 
+    //결제대기 상태인 주문 취소
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponse<Void>> cancelOrder(@AuthenticationPrincipal Long memberId,
+                                                         @PathVariable Long orderId) {
+        orderFacade.cancelOrder(memberId, orderId);
+
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
 }
 

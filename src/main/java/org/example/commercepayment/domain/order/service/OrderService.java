@@ -7,6 +7,7 @@ import org.example.commercepayment.domain.order.dto.OrderResponse;
 import org.example.commercepayment.domain.order.entity.Order;
 import org.example.commercepayment.domain.order.entity.OrderItem;
 import org.example.commercepayment.domain.order.repository.OrderRepository;
+import org.example.commercepayment.domain.payment.entity.Payment;
 import org.example.commercepayment.global.error.BusinessException;
 import org.example.commercepayment.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,10 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    // 주문 생성
+    // 주문 생성. 재고 선차감은 OrderFacade가 이미 끝낸 상태
     @Transactional
-    public Order createOrder(Member member, List<OrderItem> orderItems, int totalPrice) {
-        Order order = new Order(member, totalPrice, orderItems);
+    public Order createOrder(Member member, List<OrderItem> orderItems, int usePoint) {
+        Order order = new Order(member, orderItems, usePoint);
         return orderRepository.save(order);
     }
 
@@ -40,20 +41,31 @@ public class OrderService {
     }
 
     // Order -> OrderResponse 변환, OrderItem -> OrderItemResponse 변환
-    public OrderResponse toResponse(Order order, Long paymentId) {
+    public OrderResponse toResponse(Order order, Payment payment) {
         List<OrderItemResponse> items = order.getOrderItems().stream()
-                .map(oi -> new OrderItemResponse(oi.getProductName(), oi.getOrderPrice(), oi.getQuantity()))
+                .map(oi -> new OrderItemResponse(
+                        oi.getId(),
+                        oi.getProduct().getId(),
+                        oi.getProductName(),
+                        oi.getOrderPrice(),
+                        oi.getQuantity(),
+                        oi.getSubtotal()
+                ))
                 .toList();
+
         return new OrderResponse(
                 order.getId(),
-                paymentId,
+                order.getOrderNumber(),
+                payment.getId(),
                 order.getTotalPrice(),
+                order.getUsedPoint(),
+                payment.getPgAmount(),
+                payment.getAccruedPoint(),
                 order.getStatus().name(),
+                payment.getStatus().name(),
                 order.getOrderName(),
                 order.getCreatedAt(),
-                items
-        );
+                items);
     }
-
 }
 
