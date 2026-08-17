@@ -45,7 +45,12 @@ public enum ErrorCode {
 
     // Auth
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH_001", "인증이 필요합니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_002", "유효하지 않은 토큰입니다.");
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_002", "유효하지 않은 토큰입니다."),
+
+    // Point
+    INSUFFICIENT_POINT_BALANCE(HttpStatus.CONFLICT, "POINT_001", "포인트 잔액이 부족합니다."),
+    INVALID_POINT_AMOUNT(HttpStatus.BAD_REQUEST, "POINT_002", "포인트 사용 금액이 올바르지 않습니다.");
+
 
     private final HttpStatus status;
     private final String code;
