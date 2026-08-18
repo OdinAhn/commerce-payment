@@ -80,12 +80,10 @@ public class Order extends BaseTimeEntity {
 
     // PG 실결제 금액. 0이면 PG 호출 생략
     public int getPgAmount() {
-
         return this.totalPrice - this.usedPoint;
     }
 
     public Long getMemberId() {
-
         return member.getId();
     }
 

@@ -27,9 +27,9 @@ public class AuthService {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
         Member member = new Member(
-                request.name(),
                 request.email(),
                 passwordEncoder.encode(request.password()),
+                request.name(),
                 request.phoneNumber()
         );
         memberRepository.save(member);
@@ -39,7 +39,7 @@ public class AuthService {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
-        if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
             throw new RuntimeException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
         String token = jwtProvider.createToken(member.getId(), member.getEmail());

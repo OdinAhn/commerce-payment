@@ -33,8 +33,6 @@ public class Member extends BaseTimeEntity {
     // point 잔액
     @Column(name = "point_balance", nullable = false)
     private int pointBalance = 0; // 신규가입 시 0P로 시작
-    @Column
-    private int point;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -42,12 +40,11 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Member(String email, String password, String name, String phoneNumber, int point) {
+    public Member(String email, String password, String name, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.point = point;
     }
 
     // 포인트 잔액 변경 메서드

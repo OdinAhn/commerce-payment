@@ -75,13 +75,6 @@ public class GlobalExceptionHandler {
 
     // Valid 에러 핸들 (DTO 검증 실패)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .reduce((a, b) -> a + ", " + b)
-                .orElse("입력값이 올바르지 않습니다");
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.error(ErrorCode.INVALID_INPUT, message));
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .findFirst()

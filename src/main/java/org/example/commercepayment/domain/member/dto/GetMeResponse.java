@@ -19,7 +19,7 @@ public record GetMeResponse(
                 member.getEmail(),
                 member.getName(),
                 member.getPhoneNumber(),
-                member.getPoint(),
+                member.getPointBalance(),
                 member.getCreatedAt(),
                 member.getUpdatedAt()
         );
