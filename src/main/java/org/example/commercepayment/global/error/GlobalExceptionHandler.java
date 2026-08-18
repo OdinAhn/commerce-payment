@@ -91,22 +91,9 @@ public class GlobalExceptionHandler {
     // 404 에러 핸들 (NoResourceFoundException)
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        String accept = request.getHeader(HttpHeaders.ACCEPT);
-
-        boolean isHtmlRequest = (uri != null && (uri.startsWith("/view/") || uri.equals("/")))
-                || (accept != null && accept.contains("text/html"));
-
-        if (isHtmlRequest) {
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, "/view/error/404")
-                    .build();
-        }
-
-        log.error("404 Not Found: {}", uri);
+        log.warn("404 Not Found: {}", request.getRequestURI());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                // 수정: error(String code, String message) 형태 사용
                 .body(ApiResponse.error("C005", "요청한 리소스를 찾을 수 없습니다."));
     }
 
