@@ -42,7 +42,7 @@
 
 
 ## 📊 ERD (Entity Relationship Diagram)
-![ERD](docs/ERD.png)
+<img width="2602" height="4548" alt="Image" src="https://github.com/user-attachments/assets/90b1c202-880a-4c1a-8409-0de6d9bcb93e" />
 
 
 ## 📌 개발 규칙 및 코드 컨벤션
