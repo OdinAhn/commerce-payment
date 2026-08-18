@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -22,8 +22,8 @@ public class MemberController {
 
         // TODO : 인증 관련 함수에서 내 id 가져오기
 
-        GetMeResponse result = memberService.getOne(0L);
+        GetMeResponse response = memberService.getOne(0L);
 
-        return ResponseEntity.ok(ApiResponse.ok(result));
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
