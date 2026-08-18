@@ -1,0 +1,19 @@
+package org.example.commercepayment.domain.order.dto;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record OrderResponse(
+        Long orderId,
+        String orderNumber,
+        Long paymentId,
+        int totalPrice,
+        int usedPoint,                      // 사용 포인트
+        int pgAmount,                       // PG 결제 금액
+        int accruedPoint,                   //  적립 포인트
+        String status,
+        String paymentStatus,               // 결제 상태
+        String orderName,
+        LocalDateTime createdAt,
+        List<OrderItemResponse> orderItems) {
+}

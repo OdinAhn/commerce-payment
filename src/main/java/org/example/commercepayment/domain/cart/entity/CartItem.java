@@ -9,7 +9,6 @@ import org.example.commercepayment.domain.member.entity.Member;
 import org.example.commercepayment.domain.product.entity.Product;
 import org.example.commercepayment.global.entity.BaseTimeEntity;
 
-
 @Entity
 @Table(name = "cart_items", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"cart_id", "product_id"})

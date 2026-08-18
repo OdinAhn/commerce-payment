@@ -39,10 +39,6 @@ public class CartService {
         return new CartResponse(totalPrice, items);
     }
 
-    /**
-     * 장바구니 담기: 상품을 장바구니에 추가하거나, 이미 있다면 수량을 증가시킵니다.
-     * @Transactional: DB 데이터가 변경(추가/수정)되므로 반드시 필요합니다.
-     */
     @Transactional
     public Long addItem(CartItem cartItem) {
         // 1. 해당 회원이 똑같은 상품을 이미 장바구니에 담아두었는지 DB에서 조회합니다.
@@ -108,6 +104,9 @@ public class CartService {
         }
     }
 
+    public List<CartItem> findCartEntities(Long memberId) {
+        return cartItemRepository.findByMemberId(memberId);
+    }
 
     // 장바구니 전체 비우기: 회원의 장바구니 데이터를 한 번에 모두 삭제합니다.
 

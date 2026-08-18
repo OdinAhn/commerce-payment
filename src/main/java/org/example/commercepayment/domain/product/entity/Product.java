@@ -1,15 +1,12 @@
 package org.example.commercepayment.domain.product.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import org.example.commercepayment.global.entity.BaseTimeEntity;
 import org.example.commercepayment.global.error.BusinessException;
 import org.example.commercepayment.global.error.ErrorCode;
-
 
 @Entity
 @Table(name = "products")
@@ -43,10 +40,10 @@ public class Product extends BaseTimeEntity {
 
     public Product(String name, int price, int stock, String description, String category, String salesStatus) {
         if (price < 0) {
-            throw new IllegalArgumentException("가격은 0 이상이어야 합니다");
+            throw new BusinessException(ErrorCode.INVALID_PRICE);
         }
         if (stock < 0) {
-            throw new IllegalArgumentException("재고는 0 이상이어야 합니다");
+            throw new BusinessException(ErrorCode.INVALID_STOCK);
         }
         this.name = name;
         this.price = price;
@@ -59,9 +56,9 @@ public class Product extends BaseTimeEntity {
     // 비즈니스 로직: 재고 변경 시 자동으로 상태 업데이트
     public void deductStock(int quantity) {
         if (quantity <= 0) {
-            throw new BusinessException(ErrorCode.INVALID_QUANTITY); // 커스텀 예외 적용
+            throw new BusinessException(ErrorCode.INVALID_QUANTITY);
         }
-        if (this.stock < quantity) {
+        if (quantity > this.stock) {
             throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
         }
         this.stock -= quantity;
@@ -72,8 +69,9 @@ public class Product extends BaseTimeEntity {
         }
     }
 
+    // 주문 취소 시 선차감된 재고 되돌리는 메서드
     public void restoreStock(int quantity) {
-        if (quantity <= 0) {
+        if (quantity <= 0)  {   // 음수와 0 입력을 방지하는 조건 문
             throw new BusinessException(ErrorCode.INVALID_QUANTITY);
         }
         this.stock += quantity;

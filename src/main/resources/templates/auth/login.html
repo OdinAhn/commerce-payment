@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <th:block th:replace="~{layout/default :: head('로그인')}" />
+</head>
+<body class="font-sans bg-white text-sf-black min-h-screen flex flex-col">
+    <th:block th:replace="~{layout/default :: header}" />
+
+    <main class="flex-1">
+        <div class="min-h-[75vh] flex items-center justify-center px-4 py-20">
+            <div class="w-full max-w-md animate-fade-in">
+
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-light text-gray-900 mb-3 tracking-widest uppercase letter-spacing-2">로그인</h1>
+                    <p class="text-sm text-gray-500 tracking-wide">SpartaFashion 계정으로 로그인</p>
+                </div>
+
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="space-y-6">
+                        <div>
+                            <input type="email" id="email" required placeholder="이메일"
+                                   class="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:border-b-2 focus:border-gray-900 transition-colors">
+                        </div>
+                        <div>
+                            <input type="password" id="password" required placeholder="비밀번호"
+                                   class="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:border-b-2 focus:border-gray-900 transition-colors">
+                        </div>
+                    </div>
+
+                    <div id="login-error" class="hidden mt-6 p-4 bg-red-50 border border-red-200 text-sm text-red-600 flex items-center gap-3">
+                        <i class="ri-error-warning-line flex-shrink-0"></i>
+                        <span id="login-error-text"></span>
+                    </div>
+
+                    <button type="submit" id="btn-login"
+                            class="btn-primary w-full mt-8 py-4 text-sm flex items-center justify-center gap-2 bg-black hover:bg-gray-900 text-white font-light transition-all duration-300 uppercase tracking-widest letter-spacing-1">
+                        로그인
+                    </button>
+                </form>
+
+                <div class="mt-8 text-center text-sm">
+                    <p class="text-gray-500">아직 회원이 아니신가요?</p>
+                    <a href="/signup" class="text-gray-900 font-medium hover:underline mt-1 inline-block">회원가입</a>
+                </div>
+
+                <div class="mt-10 pt-8 border-t border-gray-200">
+                    <p class="text-[11px] font-medium text-gray-500 mb-4 uppercase tracking-widest">테스트 계정 (비밀번호: sparta1234)</p>
+                    <div>
+                        <button type="button" onclick="fillTestAccount('sparta@nbcamp.com')"
+                                class="w-full py-2.5 bg-white border border-gray-300 rounded-sm text-xs text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-all font-medium uppercase tracking-wider">
+                            르탄이
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{layout/default :: footer}" />
+    <th:block th:replace="~{layout/default :: scripts}" />
+
+    <script>
+        if (isLoggedIn()) {
+            const member = getMember();
+            if (member && member.id) {
+                apiFetch('/api/members/me')
+                    .then(() => { window.location.href = '/'; })
+                    .catch(() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('member');
+                        updateAuthUI();
+                    });
+            } else {
+                localStorage.removeItem('token');
+                localStorage.removeItem('member');
+                updateAuthUI();
+            }
+        }
+
+        function fillTestAccount(email) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = 'sparta1234';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const errorDiv = document.getElementById('login-error');
+            const errorText = document.getElementById('login-error-text');
+            errorDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                const data = await apiFetch('/api/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                saveAuth(data.token, data.member);
+                window.location.href = '/';
+            } catch (err) {
+                errorText.textContent = err.message;
+                errorDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '로그인';
+            }
+        }
+    </script>
+</body>
+</html>

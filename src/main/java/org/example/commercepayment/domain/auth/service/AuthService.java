@@ -9,6 +9,7 @@ import org.example.commercepayment.domain.member.repository.MemberRepository;
 import org.example.commercepayment.global.error.CustomException;
 import org.example.commercepayment.global.error.ErrorCode;
 import org.example.commercepayment.global.jwt.JwtProvider;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,5 +61,4 @@ public class AuthService {
     private AuthResponse.MemberInfo toMemberInfo(Member member) {
         return new AuthResponse.MemberInfo(member.getId(), member.getName(), member.getEmail(), member.getPhoneNumber());
     }
-
 }

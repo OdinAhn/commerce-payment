@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<th:block th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | SpartaFashion'">SpartaFashion</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sf: {
+                            black: '#111111',
+                            dark: '#1a1a1a',
+                            accent: '#E8344E',
+                            cream: '#FAFAF8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Pretendard', 'sans-serif'],
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        },
+                    },
+                    animation: {
+                        marquee: 'marquee 20s linear infinite',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</th:block>
+
+<th:block th:fragment="header">
+    <div class="bg-sf-black text-white py-2 overflow-hidden">
+        <div class="flex animate-marquee whitespace-nowrap">
+            <span class="text-[11px] font-light tracking-wider px-8">신규 회원가입 시 10% 할인 쿠폰 즉시 지급</span>
+            <span class="text-[11px] font-light tracking-wider px-8">3만원 이상 구매 시 무료배송</span>
+            <span class="text-[11px] font-light tracking-wider px-8">2026 S/S 신상품 입고</span>
+            <span class="text-[11px] font-light tracking-wider px-8">평일 오후 2시 이전 주문 당일 출고</span>
+            <span class="text-[11px] font-light tracking-wider px-8">7일 이내 무료 교환·반품</span>
+            <span class="text-[11px] font-light tracking-wider px-8">카드 결제 시 최대 12개월 무이자 할부</span>
+        </div>
+    </div>
+
+    <header class="sf-header sticky top-0 z-50 bg-white border-b border-gray-100" id="main-header">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-1 group">
+                    <span class="text-xl font-light tracking-wider text-sf-black">SPARTA</span>
+                    <span class="text-xl font-black tracking-wider text-sf-black">FASHION</span>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-12">
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <a href="/cart" id="nav-cart" onclick="return handleCartClick()"
+                       class="relative text-sf-black hover:text-sf-accent transition-colors">
+                        <i class="ri-shopping-bag-line text-[20px]"></i>
+                        <span id="cart-badge"
+                              class="absolute -top-2 -right-2 w-5 h-5 bg-sf-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden badge-pulse">
+                            0
+                        </span>
+                    </a>
+
+                    <div class="relative hidden" id="user-dropdown">
+                        <button onclick="toggleUserDropdown()"
+                                class="text-sf-black hover:text-sf-accent transition-colors">
+                            <i class="ri-user-line text-[20px]"></i>
+                        </button>
+                        <div id="user-menu"
+                             class="hidden absolute right-0 mt-3 w-56 bg-white rounded-lg py-1 z-50 border border-gray-100 shadow-lg">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-semibold text-sf-black" id="user-name">사용자</p>
+                                <p class="text-xs text-gray-500 mt-0.5" id="user-email">email</p>
+                            </div>
+                            <a href="/orders" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-sf-cream transition-colors">
+                                <i class="ri-file-list-3-line text-gray-400"></i> 주문내역
+                            </a>
+                            <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-sf-cream transition-colors">
+                                <i class="ri-logout-box-r-line text-gray-400"></i> 로그아웃
+                            </button>
+                        </div>
+                    </div>
+
+                    <a href="/login" id="auth-buttons"
+                       class="text-sf-black hover:text-sf-accent transition-colors">
+                        <i class="ri-user-line text-[20px]"></i>
+                    </a>
+
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-sf-black hover:text-sf-accent transition-colors">
+                        <i class="ri-menu-line text-[20px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white">
+            <div class="max-w-[1280px] mx-auto px-4 py-3 space-y-1">
+            </div>
+        </div>
+    </header>
+</th:block>
+
+<th:block th:fragment="footer">
+    <footer class="bg-sf-black text-white mt-auto border-t border-gray-900">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                        <div>
+                    <div class="flex items-center gap-1 mb-6">
+                        <span class="text-lg font-light tracking-wider">SPARTA</span>
+                        <span class="text-lg font-black tracking-wider">FASHION</span>
+                    </div>
+                    <p class="text-sm font-light text-gray-300 leading-relaxed">
+                        트렌디한 패션을 합리적인 가격에.<br>
+                        당신의 스타일을 완성하세요.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-white uppercase tracking-widest mb-4">고객센터</h4>
+                    <ul class="space-y-2.5 text-sm font-light text-gray-400">
+                        <li>평일 10:00 - 18:00</li>
+                        <li>점심 12:00 - 13:00</li>
+                        <li>주말/공휴일 휴무</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-white uppercase tracking-widest mb-4">이용안내</h4>
+                    <ul class="space-y-2.5 text-sm font-light text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">이용약관</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">개인정보처리방침</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">배송/교환/반품</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-xs font-light text-gray-500">&copy; 2026 SpartaFashion. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast-container" class="fixed top-20 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        function saveAuth(token, member) {
+            localStorage.setItem('token', token);
+            localStorage.setItem('member', JSON.stringify(member));
+            updateAuthUI();
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('member');
+            updateAuthUI();
+            showToast('로그아웃 되었습니다', 'info');
+            window.location.href = '/';
+        }
+
+        function getToken() { return localStorage.getItem('token'); }
+
+        function getMember() {
+            const d = localStorage.getItem('member');
+            return d ? JSON.parse(d) : null;
+        }
+
+        async function refreshMember() {
+            const member = getMember();
+            if (!member || !member.id) return member;
+            try {
+                const fresh = await apiFetch('/api/members/me');
+                const updated = { id: fresh.id, name: fresh.name, email: fresh.email, phoneNumber: fresh.phoneNumber };
+                localStorage.setItem('member', JSON.stringify(updated));
+                updateAuthUI();
+                return updated;
+            } catch (e) {
+                return member;
+            }
+        }
+
+        function isLoggedIn() { return !!getToken(); }
+
+        function requireAuth() {
+            if (!isLoggedIn()) {
+                showToast('로그인이 필요합니다', 'warning');
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+
+        function updateAuthUI() {
+            const loggedIn = isLoggedIn();
+            const member = getMember();
+
+            document.getElementById('auth-buttons').classList.toggle('hidden', loggedIn);
+            document.getElementById('user-dropdown').classList.toggle('hidden', !loggedIn);
+
+            if (loggedIn && member) {
+                document.getElementById('user-name').textContent = member.name;
+                document.getElementById('user-email').textContent = member.email;
+            }
+        }
+
+        function handleCartClick() {
+            if (!isLoggedIn()) {
+                showToast('로그인이 필요합니다', 'warning');
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+
+        function toggleUserDropdown() {
+            document.getElementById('user-menu').classList.toggle('hidden');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('user-dropdown');
+            if (dd && !dd.contains(e.target)) {
+                document.getElementById('user-menu').classList.add('hidden');
+            }
+        });
+
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthUI();
+            if (isLoggedIn() && !document.getElementById('cart-items')) updateCartBadge();
+        });
+
+        async function apiFetch(url, options = {}) {
+            const headers = { 'Content-Type': 'application/json' };
+            const token = getToken();
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            options.headers = { ...headers, ...(options.headers || {}) };
+
+            const response = await fetch(url, options);
+
+            if ((response.status === 401 || response.status === 403) && !url.startsWith('/api/auth/')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('member');
+                updateAuthUI();
+                if (!apiFetch._authExpiredHandled) {
+                    apiFetch._authExpiredHandled = true;
+                    showToast('로그인이 만료되었습니다', 'warning');
+                }
+                throw new Error('인증이 만료되었습니다');
+            }
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: '요청 처리 중 오류가 발생했습니다' }));
+                throw new Error(error.message || `HTTP ${response.status}`);
+            }
+
+            const text = await response.text();
+            if (!text) return {};
+            const json = JSON.parse(text);
+            return json.data !== undefined ? json.data : json;
+        }
+
+        async function updateCartBadge(items) {
+            if (!isLoggedIn()) return;
+            try {
+                if (!items) items = await apiFetch('/api/cart/items');
+                const badge = document.getElementById('cart-badge');
+                if (items && items.length > 0) {
+                    badge.textContent = items.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            } catch (e) {}
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const colors = { success: 'bg-sf-black', danger: 'bg-red-600', warning: 'bg-amber-500', info: 'bg-gray-700' };
+            const icons = { success: 'ri-check-line', danger: 'ri-error-warning-line', warning: 'ri-alert-line', info: 'ri-information-line' };
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto toast-modern flex items-center gap-3 px-5 py-3 rounded-lg text-white text-sm font-medium ${colors[type] || colors.success} animate-slide-in`;
+            toast.innerHTML = `<i class="${icons[type] || icons.success}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function formatPrice(num) { return Number(num).toLocaleString('ko-KR'); }
+
+
+        function showConfirm(message, onConfirm) {
+            // 기존 모달이 있으면 제거
+            const existing = document.getElementById('custom-confirm-overlay');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'custom-confirm-overlay';
+            overlay.className = 'fixed inset-0 z-[10000] flex items-center justify-center';
+            overlay.innerHTML = `
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" id="confirm-backdrop"></div>
+                <div class="relative bg-white rounded-lg shadow-2xl max-w-sm w-full mx-4 animate-fade-in overflow-hidden">
+                    <div class="px-8 pt-8 pb-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
+                                <i class="ri-error-warning-line text-red-500 text-xl"></i>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-900">확인</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 leading-relaxed pl-[52px]">${message}</p>
+                    </div>
+                    <div class="flex border-t border-gray-100">
+                        <button id="confirm-cancel-btn"
+                                class="flex-1 px-6 py-4 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                            취소
+                        </button>
+                        <button id="confirm-ok-btn"
+                                class="flex-1 px-6 py-4 text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">
+                            확인
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            function cleanup() { overlay.remove(); }
+
+            document.getElementById('confirm-cancel-btn').addEventListener('click', cleanup);
+            document.getElementById('confirm-backdrop').addEventListener('click', cleanup);
+            document.getElementById('confirm-ok-btn').addEventListener('click', function() {
+                cleanup();
+                if (typeof onConfirm === 'function') onConfirm();
+            });
+
+            // ESC 키로 닫기
+            function onKey(e) {
+                if (e.key === 'Escape') { cleanup(); document.removeEventListener('keydown', onKey); }
+            }
+            document.addEventListener('keydown', onKey);
+        }
+
+        const _productVisuals = [
+            { keywords: ['티셔츠', 'tee', 't-shirt'],    icon: 'ri-t-shirt-line',     bg: 'from-sky-50 to-blue-100',     color: 'text-sky-300' },
+            { keywords: ['데님', '팬츠', 'denim'],         icon: 'ri-scissors-cut-line', bg: 'from-indigo-50 to-indigo-100', color: 'text-indigo-300' },
+            { keywords: ['니트', 'knit', '스웨터'],         icon: 'ri-t-shirt-2-line',   bg: 'from-amber-50 to-orange-100',  color: 'text-amber-300' },
+            { keywords: ['카고', '조거'],                    icon: 'ri-compass-3-line',   bg: 'from-emerald-50 to-green-100', color: 'text-emerald-300' },
+            { keywords: ['백', 'bag', '크로스백'],          icon: 'ri-handbag-line',     bg: 'from-rose-50 to-pink-100',     color: 'text-rose-300' },
+            { keywords: ['스니커즈', '운동화', '러닝'],      icon: 'ri-footprint-line',   bg: 'from-orange-50 to-red-100',    color: 'text-orange-300' },
+            { keywords: ['코트', 'coat', '재킷'],           icon: 'ri-shirt-line',       bg: 'from-gray-100 to-slate-200',   color: 'text-gray-400' },
+            { keywords: ['치노', 'chino', '슬랙스'],        icon: 'ri-palette-line',     bg: 'from-violet-50 to-purple-100', color: 'text-violet-300' },
+            { keywords: ['캡', '모자', '볼캡', 'hat'],      icon: 'ri-graduation-cap-line', bg: 'from-yellow-50 to-amber-100', color: 'text-yellow-400' },
+        ];
+        const _defaultVisual = { icon: 'ri-shopping-bag-line', bg: 'from-gray-50 to-gray-100', color: 'text-gray-300' };
+
+        function getProductVisual(productName) {
+            if (!productName) return _defaultVisual;
+            const name = productName.toLowerCase();
+            for (const v of _productVisuals) {
+                if (v.keywords.some(k => name.includes(k))) return v;
+            }
+            return _defaultVisual;
+        }
+    </script>
+</th:block>
+
+</html>

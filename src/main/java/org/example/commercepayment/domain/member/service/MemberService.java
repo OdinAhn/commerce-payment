@@ -2,8 +2,10 @@ package org.example.commercepayment.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.commercepayment.domain.member.dto.GetMeResponse;
+import org.example.commercepayment.domain.member.dto.MemberResponse;
 import org.example.commercepayment.domain.member.entity.Member;
 import org.example.commercepayment.domain.member.repository.MemberRepository;
+import org.example.commercepayment.global.error.BusinessException;
 import org.example.commercepayment.global.error.CustomException;
 import org.example.commercepayment.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
         );
     }
 

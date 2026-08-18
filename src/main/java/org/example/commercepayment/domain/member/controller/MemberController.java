@@ -2,6 +2,7 @@ package org.example.commercepayment.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.commercepayment.domain.member.dto.GetMeResponse;
+import org.example.commercepayment.domain.member.dto.MemberResponse;
 import org.example.commercepayment.domain.member.service.MemberService;
 import org.example.commercepayment.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<GetMeResponse>> me(
