@@ -1,6 +1,7 @@
 package org.example.commercepayment.global.error;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import org.example.commercepayment.global.response.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -12,9 +13,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
+        ErrorCode code = e.getErrorCode();
+        return ResponseEntity.status(code.getStatus())
+                .body(ApiResponse.error(code, e.getMessage()));
+    }
 
     // Arg 에러 핸들
     @ExceptionHandler(IllegalArgumentException.class)
@@ -22,16 +31,17 @@ public class GlobalExceptionHandler {
         log.warn("IllegalArgumentException: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), ErrorCode.INVALID_INPUT_VALUE.getCode(), e.getMessage()));
+                // 수정: error(ErrorCode errorCode, String message) 형태 사용
+                .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, e.getMessage()));
     }
-
     // State 에러 핸들
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException e) {
         log.warn("IllegalStateException: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), ErrorCode.INVALID_INPUT_VALUE.getCode(), e.getMessage()));
+                // 수정: error(ErrorCode errorCode, String message) 형태 사용
+                .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, e.getMessage()));
     }
 
     // 커스텀 에러 핸들
@@ -59,7 +69,8 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ex.getStatus())
-                .body(ApiResponse.fail(ex.getStatus().value(), ex.getErrorCode(), ex.getMessage()));
+                // 수정: error(String code, String message) 또는 error(ErrorCode, String) 형태 사용
+                .body(ApiResponse.error(ex.getErrorCode(), ex.getMessage()));
     }
 
     // Valid 에러 핸들 (DTO 검증 실패)
@@ -73,10 +84,11 @@ public class GlobalExceptionHandler {
         log.warn("Validation Error: {}", errorMessage);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), ErrorCode.INVALID_INPUT_VALUE.getCode(), errorMessage));
+                // 수정: error(ErrorCode errorCode, String message) 형태 사용 (.getCode() 제거)
+                .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage));
     }
 
-    // 404 Not Found
+    // 404 에러 핸들 (NoResourceFoundException)
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
         String uri = request.getRequestURI();
@@ -94,7 +106,8 @@ public class GlobalExceptionHandler {
         log.error("404 Not Found: {}", uri);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.fail(HttpStatus.NOT_FOUND.value(), "C005", "요청한 리소스를 찾을 수 없습니다."));
+                // 수정: error(String code, String message) 형태 사용
+                .body(ApiResponse.error("C005", "요청한 리소스를 찾을 수 없습니다."));
     }
 
     // 알 수 없는 서버 에러 핸들
@@ -104,6 +117,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
+                // 수정: error(ErrorCode errorCode) 형태 사용
+                .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
