@@ -27,7 +27,7 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "int UNSIGNED")
     private int price;
 
-    @Column(nullable = false, columnDefinition = "int UNSIGNED DEFAULT 0")
+    @Column(name = "stock_quantity", nullable = false, columnDefinition = "int UNSIGNED DEFAULT 0")
     private int stock = 0;
 
     @Column(columnDefinition = "TEXT")
