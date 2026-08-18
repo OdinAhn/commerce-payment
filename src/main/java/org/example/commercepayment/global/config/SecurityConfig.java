@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -48,16 +50,15 @@ public class SecurityConfig {
                 )
 
                 // “경로별 접근 정책”을 정의한다.
-                /*
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/favicon.*").permitAll()
                         .requestMatchers("/", "/login", "/signup", "/products/**", "/cart", "/orders/**", "/checkout").permitAll()
                         .requestMatchers("/api/auth/**", "/api/products/**", "/api/webhooks/**", "/api/config/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated()
+                        //.anyRequest().authenticated()
+                        .anyRequest().permitAll() // 개발 중 임시로 전체 허용
                 )
-                */
 
                 // 컨트롤러 진입 전, JwtAuthFilter가 Authorization 헤더에서 토큰을 꺼내 검증한다.
                 // 검증 성공 시 SecurityContextHolder에 Authentication이 저장되고, 이후 인가 판단에서 authenticated() 조건을 만족
