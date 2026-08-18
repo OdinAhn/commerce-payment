@@ -87,7 +87,8 @@
 
         async function loadCart() {
             try {
-                const items = await apiFetch('/api/cart/items');
+                const cart = await apiFetch('/api/cart');
+                const items = cart.items;
                 document.getElementById('cart-loading').classList.add('hidden');
 
                 updateCartBadge(items);
