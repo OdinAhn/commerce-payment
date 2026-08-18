@@ -28,6 +28,7 @@ public class JwtProvider {
                 .build();
     }
 
+    // memberId,email 클레임을 담아 만료시간/서명을 포함한 JWT를 생성
     public String createToken(Long memberId, String email) {
         Date now = new Date();
         return Jwts.builder()
@@ -39,10 +40,12 @@ public class JwtProvider {
                 .compact();
     }
 
+    // 토큰의 subject(회원 ID)를 파싱해 반환
     public Long getMemberId(String token) {
         return Long.parseLong(parseClaims(token).getSubject());
     }
 
+    // 서명·만료 등 검증을 시도해 성공 여부를 boolean으로 반환
     public boolean validate(String token) {
         try {
             parseClaims(token);
@@ -53,11 +56,12 @@ public class JwtProvider {
         }
     }
 
+    // 검증 키로 서명된 클레임을 파싱해 Claims를 돌려주는 공통 파서
     private Claims parseClaims(String token) {
         return parser
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-}
 
+}
