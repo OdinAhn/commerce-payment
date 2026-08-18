@@ -21,7 +21,7 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public ApiResponse<PaymentConfirmResponse> confirm(
-            @RequestAttribute Long memberId,   // JWT 필터가 채워주는 값이라고 가정
+            @RequestAttribute Long memberId,   
             @Valid @RequestBody PaymentConfirmRequest request
     ) {
         return ApiResponse.ok(paymentFacade.confirmPayment(memberId, request));
@@ -31,7 +31,6 @@ public class PaymentController {
     public ApiResponse<Void> cancel(@PathVariable Long id) {
         Payment payment = paymentService.findByIdWithOrder(id);
         if (payment.getPgAmount() == 0 && payment.getAmount() == 0) {
-            // no-op guard, 실제로는 status 검증
         }
         paymentService.cancelPayment(payment);
         return ApiResponse.ok(null);
