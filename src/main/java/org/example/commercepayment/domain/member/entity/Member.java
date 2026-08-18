@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.commercepayment.global.entity.BaseEntity;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Entity
 @Table(name="members")
@@ -18,34 +16,26 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     protected String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 13)
+    @Column(nullable = false, length = 20)
     private String phoneNumber;
 
     @Column
     private int point;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    public Member(String email, String password, String name, String phoneNumber, int point) {
+    public Member(String email, String password, String name, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.point = point;
+        this.point = 0;
     }
-
-
 }
