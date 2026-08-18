@@ -292,7 +292,7 @@
         async function updateCartBadge(items) {
             if (!isLoggedIn()) return;
             try {
-                if (!items) items = await apiFetch('/api/cart/items');
+                if (!items) items = (await apiFetch('/api/cart')).items;
                 const badge = document.getElementById('cart-badge');
                 if (items && items.length > 0) {
                     badge.textContent = items.length;
