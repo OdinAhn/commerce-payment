@@ -37,7 +37,6 @@ public class Member extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.point = 0;
     }
 
     // 포인트 잔액 변경 메서드
