@@ -6,9 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.commercepayment.global.entity.BaseTimeEntity;
 
+import java.time.LocalDateTime;
+
+@Getter
 @Entity
 @Table(name = "members")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
@@ -16,27 +18,36 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String name;
-
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
+    @Column(nullable = false)
+    protected String password;
 
-    @Column(name = "phone_number", nullable = false, length = 20)
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, length = 13)
     private String phoneNumber;
 
     // point 잔액
     @Column(name = "point_balance", nullable = false)
     private int pointBalance = 0; // 신규가입 시 0P로 시작
+    @Column
+    private int point;
 
-    public Member(String name, String email, String passwordHash, String phoneNumber) {
-        this.name = name;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    public Member(String email, String password, String name, String phoneNumber, int point) {
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
+        this.name = name;
         this.phoneNumber = phoneNumber;
+        this.point = point;
     }
 
     // 포인트 잔액 변경 메서드
@@ -45,4 +56,3 @@ public class Member extends BaseTimeEntity {
         this.pointBalance += signedAmount;
     }
 }
-

@@ -6,5 +6,7 @@ public record ProductResponse(
         String name,
         int price,
         int stock,
-        String description
+        String description,
+        String category,      // 추가
+        String salesStatus    // 추가
 ) {}

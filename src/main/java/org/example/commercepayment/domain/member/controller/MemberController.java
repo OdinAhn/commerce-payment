@@ -1,22 +1,33 @@
 package org.example.commercepayment.domain.member.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.example.commercepayment.domain.member.dto.GetMeResponse;
 import org.example.commercepayment.domain.member.dto.MemberResponse;
 import org.example.commercepayment.domain.member.service.MemberService;
+import org.example.commercepayment.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/members")
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class MemberController {
 
     private final MemberService memberService;
 
     @GetMapping("/me")
-    public ResponseEntity<MemberResponse> me(@AuthenticationPrincipal Long memberId) {
-        return ResponseEntity.ok(memberService.getMe(memberId));
+    public ResponseEntity<ApiResponse<GetMeResponse>> getMe() {
+
+        // TODO : 인증 관련 함수에서 내 id 가져오기
+
+        GetMeResponse result = memberService.getOne(0L);
+
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

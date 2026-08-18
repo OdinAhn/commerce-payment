@@ -11,13 +11,14 @@ import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.member.id = :memberId")
+    @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.cart.member.id = :memberId")
     List<CartItem> findByMemberId(@Param("memberId") Long memberId);
 
-    Optional<CartItem> findByMember_IdAndProduct_Id(Long memberId, Long productId);
+    // Spring Data JPA 명명 규칙에 따라 경로 변경
+    Optional<CartItem> findByCart_Member_IdAndProduct_Id(Long memberId, Long productId);
 
     @Modifying
-    @Query("DELETE FROM CartItem ci WHERE ci.id = :id AND ci.member.id = :memberId")
+    @Query("DELETE FROM CartItem ci WHERE ci.id = :id AND ci.cart.member.id = :memberId")
     int deleteByIdAndMember_Id(@Param("id") Long id, @Param("memberId") Long memberId);
 
     // 주문서 미리보기
@@ -33,6 +34,13 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     // - IN절 일괄 삭제: 개별 deleteByIdAndMember_Id를 주문한 아이템 수만큼 반복 호출하는 대신 한 번의 쿼리로 처리 (N번 쿼리 → 1번)
     // - 반환 int: 실제로 삭제된 행 수
     @Modifying
-    @Query("DELETE FROM CartItem c WHERE c.id IN :ids AND c.member.id = :memberId")
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.member.id = :memberId")
+    void deleteAllByMember_Id(@Param("memberId") Long memberId);
+
+    @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.id IN :ids AND ci.cart.member.id = :memberId")
+    List<CartItem> findByIdInAndMember_IdWithProduct(@Param("ids") List<Long> ids, @Param("memberId") Long memberId);
+
+    @Modifying
+    @Query("DELETE FROM CartItem c WHERE c.id IN :ids AND c.cart.member.id = :memberId")
     int deleteAllByIdInAndMemberId(@Param("ids") List<Long> ids, @Param("memberId") Long memberId);
 }

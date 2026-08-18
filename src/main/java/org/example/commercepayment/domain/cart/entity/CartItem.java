@@ -11,7 +11,7 @@ import org.example.commercepayment.global.entity.BaseTimeEntity;
 
 @Entity
 @Table(name = "cart_items", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"member_id", "product_id"})
+        @UniqueConstraint(columnNames = {"cart_id", "product_id"})
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,9 +21,10 @@ public class CartItem extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Cart와 연결
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "cart_id", nullable = false)
+    private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -32,8 +33,8 @@ public class CartItem extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "int UNSIGNED DEFAULT 1")
     private int quantity;
 
-    public CartItem(Member member, Product product, int quantity) {
-        this.member = member;
+    public CartItem(Cart cart, Product product, int quantity) {
+        this.cart = cart;
         this.product = product;
         if (quantity < 1) {
             throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
@@ -41,8 +42,9 @@ public class CartItem extends BaseTimeEntity {
         this.quantity = quantity;
     }
 
+    // 편의 메서드: 서비스 로직 수정을 최소화하기 위해 남겨둡니다.
     public Long getMemberId() {
-        return member.getId();
+        return cart.getMember().getId();
     }
 
     public Long getProductId() {
