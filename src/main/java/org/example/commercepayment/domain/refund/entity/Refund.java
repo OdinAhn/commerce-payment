@@ -1,0 +1,84 @@
+package org.example.commercepayment.domain.refund.entity;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.example.commercepayment.global.entity.BaseTimeEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Table(name = "refunds")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Refund extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // TODO: 추후 Payment 객체 참조가 필요해지면 아래 주석을 풀고 기존 paymentId를 대체
+    /*
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
+    */
+
+    // 임시: Payment 엔티티 부재로 인한 ID 값(Soft Reference) 매핑
+    @Column(name = "payment_id", nullable = false)
+    private Long paymentId;
+
+    @Column(name = "cancel_reason", nullable = false)
+    private String cancelReason;
+
+    @Column(name = "point_refund_amount", nullable = false)
+    private int pointRefundAmount;
+
+    @Column(name = "pg_refund_amount", nullable = false)
+    private int pgRefundAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private RefundStatus status;
+
+    //  영속성 전이 (Cascade) 설정 : refund에 일어나는 모든 상태 변화 (저장, 삭제)를 refundItem에도 전파
+    @OneToMany(mappedBy = "refund", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefundItem> refundItems = new ArrayList<>();
+
+    // 생성자 및 빌더는 private으로 캡슐화
+    @Builder(access = AccessLevel.PRIVATE)
+    private Refund(Long paymentId, String cancelReason, int pointRefundAmount, int pgRefundAmount, RefundStatus status) {
+        // TODO: 객체 참조 변경 시 paymentId 파라미터를 Payment 객체로 변경
+        this.paymentId = paymentId;
+        this.cancelReason = cancelReason;
+        this.pointRefundAmount = pointRefundAmount;
+        this.pgRefundAmount = pgRefundAmount;
+        this.status = status;
+    }
+
+    // 정적 팩토리 메서드를 통해서만 객체 생성
+    public static Refund create(Long paymentId, String cancelReason, int pointRefundAmount, int pgRefundAmount) {
+        return Refund.builder()
+                .paymentId(paymentId)
+                .cancelReason(cancelReason)
+                .pointRefundAmount(pointRefundAmount)
+                .pgRefundAmount(pgRefundAmount)
+                .status(RefundStatus.COMPLETED) // 기본 생성 상태값
+                .build();
+    }
+
+    // 비즈니스 로직 캡슐화 (상태 변경 - Enum에 위임)
+    public void changeStatus(RefundStatus newStatus) {
+        // Enum 내부에 정의된 상태 전이 검증 로직 호출
+        this.status.validateTransitionTo(newStatus);
+        this.status = newStatus;
+    }
+
+    public void addRefundItem(RefundItem item) {
+        this.refundItems.add(item);
+        item.assignRefund(this);
+    }
+}
