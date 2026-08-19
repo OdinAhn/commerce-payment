@@ -11,17 +11,24 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: create        # ★ 운영/공용 DB 전환 시 → validate
+                              #   create   : 시작할 때마다 테이블 전부 삭제 후 재생성 (기존 데이터 소멸)
+                              #   validate : 테이블을 건드리지 않고, 엔티티와 맞는지 시작할 때 검증만
+                              #   none     : 검증도 안 함 (어긋나면 실행 중에야 터짐)
+                              #   update   : 없는 테이블/컬럼만 추가 (컬럼 삭제·타입 변경은 반영 안 됨)
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-    defer-datasource-initialization: true
+        dialect: org.hibernate.dialect.MySQLDialect   # ※ Hibernate가 자동 판단하므로 없어도 됨 (기동 시 경고 발생)
+    defer-datasource-initialization: true   # ★ ddl-auto를 validate로 바꾸면 이 줄은 삭제
+                                            #   (테이블 생성 후 data.sql을 실행시키기 위한 설정)
 
   sql:
     init:
-      mode: always  # data.sql 자동 실행
+      mode: always            # ★ 이미 데이터가 있는 DB로 전환 시 → never
+                              #   always : 시작할 때마다 data.sql 실행 (중복 INSERT 주의)
+                              #   never  : data.sql 실행 안 함
 
   thymeleaf:
     cache: false
@@ -33,5 +40,22 @@ server:
 
 # JWT 설정
 jwt:
+  # ★ 운영 전환 시 → ${JWT_SECRET:기본값} 형태로 환경변수 주입 권장 (레포에 시크릿을 남기지 않기 위해)
   secret: "c3BhcnRhLXBheW1lbnQtand0LXNlY3JldC1rZXktZm9yLWJvb3RjYW1wLTIwMjYtdmVyeS1sb25nLXNlY3JldA=="  # Base64 encoded
   expiration: 3600000  # 1시간 (ms)
+
+
+# ============================================================
+# ★ 기존 DB(테이블·데이터 있음)로 전환할 때 바꿀 것 — 총 3곳
+#
+#   1) jpa.hibernate.ddl-auto            : create  → validate
+#   2) jpa.defer-datasource-initialization: 줄 삭제
+#   3) sql.init.mode                     : always  → never
+#
+# 전환 후 시작할 때 이런 에러가 나면 엔티티와 실제 테이블이 어긋난 것:
+#   Schema-validation: missing column [xxx] in table [yyy]
+#   → 어느 쪽이 맞는지 팀에 확인 후 맞출 것
+#
+# data.sql을 수동으로 넣고 싶을 때:
+#   mysql -u payment_user -p payment_db < src/main/resources/data.sql
+# ============================================================
