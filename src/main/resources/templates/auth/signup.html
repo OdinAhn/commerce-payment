@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <th:block th:replace="~{layout/default :: head('회원가입')}" />
+</head>
+<body class="font-sans bg-white text-sf-black min-h-screen flex flex-col">
+    <th:block th:replace="~{layout/default :: header}" />
+
+    <main class="flex-1">
+        <div class="min-h-[75vh] flex items-center justify-center px-4 py-20">
+            <div class="w-full max-w-md animate-fade-in">
+
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-light text-gray-900 mb-3 tracking-widest uppercase letter-spacing-2">회원가입</h1>
+                    <p class="text-sm text-gray-500 tracking-wide">SpartaFashion 멤버가 되어보세요</p>
+                </div>
+
+                <form id="signup-form" onsubmit="handleSignup(event)">
+                    <div class="space-y-6">
+                        <div>
+                            <input type="text" id="name" required placeholder="이름" minlength="2" maxlength="20"
+                                   class="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:border-b-2 focus:border-gray-900 transition-colors">
+                        </div>
+                        <div>
+                            <input type="email" id="email" required placeholder="이메일"
+                                   class="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:border-b-2 focus:border-gray-900 transition-colors">
+                        </div>
+                        <div>
+                            <input type="password" id="password" required placeholder="비밀번호 (4자 이상)" minlength="4"
+                                   class="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:border-b-2 focus:border-gray-900 transition-colors">
+                        </div>
+                        <div>
+                            <input type="tel" id="phoneNumber" required placeholder="전화번호"
+                                   class="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:border-b-2 focus:border-gray-900 transition-colors">
+                        </div>
+                    </div>
+
+                    <div id="signup-error" class="hidden mt-6 p-4 bg-red-50 border border-red-200 text-sm text-red-600 flex items-center gap-3">
+                        <i class="ri-error-warning-line flex-shrink-0"></i>
+                        <span id="signup-error-text"></span>
+                    </div>
+
+                    <button type="submit" id="btn-signup"
+                            class="btn-primary w-full mt-8 py-4 text-sm flex items-center justify-center gap-2 bg-black hover:bg-gray-900 text-white font-light transition-all duration-300 uppercase tracking-widest letter-spacing-1">
+                        가입하기
+                    </button>
+                </form>
+
+                <div class="mt-8 text-center text-sm">
+                    <p class="text-gray-500">이미 회원이신가요?</p>
+                    <a href="/login" class="text-gray-900 font-medium hover:underline mt-1 inline-block">로그인</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{layout/default :: footer}" />
+    <th:block th:replace="~{layout/default :: scripts}" />
+
+    <script>
+        if (isLoggedIn()) window.location.href = '/';
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-signup');
+            const errorDiv = document.getElementById('signup-error');
+            const errorText = document.getElementById('signup-error-text');
+            errorDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                await apiFetch('/api/auth/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value,
+                        phoneNumber: phoneNumber
+                    })
+                });
+                showToast('회원가입이 완료되었습니다. 로그인해주세요!', 'success');
+                window.location.href = '/login';
+            } catch (err) {
+                errorText.textContent = err.message;
+                errorDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '가입하기';
+            }
+        }
+    </script>
+</body>
+</html>

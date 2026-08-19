@@ -29,7 +29,7 @@ public class OrderItem extends BaseTimeEntity {
     private Product product;
 
     // 상품명 스냅샷
-    @Column(name = "product_name", nullable = false, length = 200)
+    @Column(name = "product_name", nullable = false, length = 255)
     private String productName;
 
     // 주문 시점 가격 스냅샷

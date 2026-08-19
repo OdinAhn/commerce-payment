@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <th:block th:replace="~{layout/default :: head('상품')}" />
+    <style>
+        .detail-image-sticky {
+            position: sticky;
+            top: 6rem;
+        }
+    </style>
+</head>
+<body class="font-sans bg-white text-sf-black min-h-screen flex flex-col">
+    <th:block th:replace="~{layout/default :: header}" />
+
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+
+            <div id="detail-loading" class="text-center py-20">
+                <div class="spinner-dark mx-auto mb-3"></div>
+                <p class="text-gray-400 text-sm">상품 정보를 불러오는 중...</p>
+            </div>
+
+            <div id="detail-content" class="hidden">
+                <nav class="flex items-center gap-2 text-[10px] text-gray-500 mb-10 uppercase tracking-widest font-black">
+                    <a href="/" class="hover:text-gray-900 transition-colors">홈</a>
+                    <span class="text-gray-300">/</span>
+                    <a href="/" class="hover:text-gray-900 transition-colors">쇼핑</a>
+                    <span class="text-gray-300">/</span>
+                    <span class="text-gray-700" id="breadcrumb-name">상품</span>
+                </nav>
+
+                <div class="flex flex-col lg:flex-row gap-8 lg:gap-20 animate-fade-in">
+                    <div class="w-full lg:w-1/2 flex-shrink-0">
+                        <div class="detail-image-sticky">
+                            <div id="product-image-container" class="w-full rounded-2xl aspect-square sm:aspect-[4/5] lg:aspect-[3/4] flex items-center justify-center overflow-hidden group hover:shadow-2xl transition-shadow duration-300 bg-gradient-to-br from-gray-50 to-gray-100">
+                                <i id="product-icon" class="ri-t-shirt-line text-9xl text-gray-300 group-hover:brightness-110 transition-all duration-300"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-1/2 flex flex-col justify-start">
+                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-3 leading-none">SpartaFashion</p>
+                        <h1 class="text-2xl lg:text-4xl font-black text-gray-900 leading-tight mb-4" id="product-name">상품명</h1>
+
+                        <p class="text-gray-600 text-sm leading-relaxed mb-6" id="product-description">상품 설명이 여기에 표시됩니다</p>
+
+                        <div class="pb-6 border-b-2 border-gray-900 mb-6">
+                            <p class="text-3xl lg:text-5xl font-black text-gray-900 tracking-tight">
+                                <span id="product-price">0</span><span class="text-lg lg:text-xl font-black text-gray-700 ml-2">원</span>
+                            </p>
+                        </div>
+
+                        <div class="mb-6" id="stock-section"></div>
+
+                        <div class="mb-6" id="quantity-section"></div>
+
+                        <div class="flex flex-col sm:flex-row gap-3 mb-8" id="action-section"></div>
+
+                        <div class="pt-6 border-t-2 border-gray-200 space-y-4 text-xs text-gray-600">
+                            <div class="flex items-start gap-4">
+                                <i class="ri-truck-line text-base text-gray-400 flex-shrink-0 mt-0.5"></i>
+                                <span class="font-medium">3만원 이상 무료 배송</span>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <i class="ri-exchange-line text-base text-gray-400 flex-shrink-0 mt-0.5"></i>
+                                <span class="font-medium">7일 이내 교환/반품 가능</span>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <i class="ri-shield-check-line text-base text-gray-400 flex-shrink-0 mt-0.5"></i>
+                                <span class="font-medium">정품 보장</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cart-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center" style="display:none">
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCartModal()"></div>
+                    <div class="relative bg-white w-[90%] max-w-md p-8 rounded-2xl animate-scale-in">
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="ri-check-line text-3xl text-white"></i>
+                            </div>
+                            <h3 class="text-lg font-black text-gray-900">장바구니에 추가되었습니다</h3>
+                            <p class="text-sm text-gray-500 mt-2" id="modal-item-info"></p>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <a href="/cart" class="w-full py-4 bg-black text-white text-sm font-black text-center uppercase tracking-wider rounded-lg hover:bg-gray-900 transition-colors">
+                                장바구니로 가기
+                            </a>
+                            <a href="/" class="w-full py-4 border-2 border-black text-black text-sm font-black text-center uppercase tracking-wider rounded-lg hover:bg-black hover:text-white transition-all">
+                                계속 쇼핑하기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{layout/default :: footer}" />
+    <th:block th:replace="~{layout/default :: scripts}" />
+
+    <script>
+        let maxStock = 0;
+
+        document.addEventListener('DOMContentLoaded', loadProduct);
+
+        async function loadProduct() {
+            const pathParts = window.location.pathname.split('/');
+            const productId = pathParts[pathParts.length - 1];
+
+            try {
+                const product = await apiFetch(`/api/products/${productId}`);
+                maxStock = product.stock;
+
+                document.getElementById('breadcrumb-name').textContent = product.name;
+                document.getElementById('product-name').textContent = product.name;
+                document.getElementById('product-price').textContent = formatPrice(product.price);
+                document.getElementById('product-description').textContent = product.description || '';
+                document.title = product.name + ' | SpartaFashion';
+
+                const v = getProductVisual(product.name);
+                const imgContainer = document.getElementById('product-image-container');
+                imgContainer.className = imgContainer.className.replace(/from-\S+ to-\S+/, `${v.bg}`);
+                const icon = document.getElementById('product-icon');
+                icon.className = `${v.icon} text-9xl ${v.color} group-hover:brightness-110 transition-all duration-300`;
+
+                const stockSection = document.getElementById('stock-section');
+                if (product.stock > 10) {
+                    stockSection.innerHTML = `<div class="inline-flex items-center gap-2 text-xs font-black text-emerald-700"><span class="inline-block w-2 h-2 bg-emerald-500 rounded-full"></span> 재고 ${product.stock}개</div>`;
+                } else if (product.stock > 0) {
+                    stockSection.innerHTML = `<div class="inline-flex items-center gap-2 text-xs font-black text-amber-700"><span class="inline-block w-2 h-2 bg-amber-500 rounded-full"></span> 남은 재고 ${product.stock}개</div>`;
+                } else {
+                    stockSection.innerHTML = `<div class="inline-flex items-center gap-2 text-xs font-black text-gray-500"><span class="inline-block w-2 h-2 bg-gray-400 rounded-full"></span> 품절</div>`;
+                }
+
+                const qtySection = document.getElementById('quantity-section');
+                if (product.stock > 0) {
+                    qtySection.innerHTML = `
+                        <label class="block text-xs font-black text-gray-900 tracking-widest mb-3">수량</label>
+                        <div class="inline-flex items-center border-2 border-gray-900 rounded-lg overflow-hidden">
+                            <button onclick="changeQty(-1)" class="w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-50 transition-colors font-black">
+                                <i class="ri-subtract-line text-lg"></i>
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" max="${product.stock}"
+                                   class="w-14 h-11 text-center text-sm font-black border-x-2 border-gray-900 focus:outline-none bg-white">
+                            <button onclick="changeQty(1)" class="w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-50 transition-colors font-black">
+                                <i class="ri-add-line text-lg"></i>
+                            </button>
+                        </div>`;
+                }
+
+                const actionSection = document.getElementById('action-section');
+                if (product.stock > 0) {
+                    actionSection.innerHTML = `
+                        <button onclick="addToCartDetail(${product.id})" id="btn-add-cart"
+                                class="w-full flex items-center justify-center gap-2 px-8 py-4 bg-black text-white font-black text-sm uppercase tracking-wide rounded-lg hover:bg-gray-900 transition-all">
+                            장바구니 담기
+                        </button>`;
+                } else {
+                    actionSection.innerHTML = `
+                        <button disabled class="w-full py-4 bg-gray-200 text-gray-400 font-black text-sm uppercase tracking-wide rounded-lg cursor-not-allowed">
+                            품절
+                        </button>`;
+                }
+
+                document.getElementById('detail-loading').classList.add('hidden');
+                document.getElementById('detail-content').classList.remove('hidden');
+
+            } catch (e) {
+                document.getElementById('detail-loading').innerHTML =
+                    '<div class="text-center py-20"><i class="ri-error-warning-line text-5xl text-gray-300 mb-4"></i><p class="text-gray-500 mb-4">상품을 찾을 수 없습니다</p><a href="/" class="inline-flex items-center gap-1 text-sm text-gray-900 hover:text-gray-700 font-semibold"><i class="ri-arrow-left-line"></i> 쇼핑으로 돌아가기</a></div>';
+            }
+        }
+
+        function changeQty(delta) {
+            const input = document.getElementById('quantity');
+            const newVal = parseInt(input.value) + delta;
+            if (newVal >= 1 && newVal <= maxStock) input.value = newVal;
+        }
+
+        async function addToCartDetail(productId) {
+            if (!requireAuth()) return;
+            const btn = document.getElementById('btn-add-cart');
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                await apiFetch('/api/cart/items', {
+                    method: 'POST',
+                    body: JSON.stringify({ productId, quantity })
+                });
+                updateCartBadge();
+                const name = document.getElementById('product-name').textContent;
+                document.getElementById('modal-item-info').textContent = name + ' ' + quantity + '개';
+                document.getElementById('cart-modal').style.display = 'flex';
+            } catch (e) {
+                showToast(e.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
