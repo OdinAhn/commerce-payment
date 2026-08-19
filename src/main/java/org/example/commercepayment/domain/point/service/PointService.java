@@ -31,7 +31,7 @@ public class PointService {
     @Transactional(propagation = Propagation.MANDATORY)
     public void use(Long memberId, Payment payment, int amount) {
         Member member = lockMember(memberId);
-        if (member.getPointBalance() < amount) {
+        if (member.getPoint() < amount) {
             throw new BusinessException(ErrorCode.INSUFFICIENT_POINT_BALANCE);
         }
         apply(member, payment, USE, amount);
@@ -39,30 +39,27 @@ public class PointService {
 
     // 결제 완료 시 적립. 적립액 산정(PG 결제액의 1%)은 호출자 책임.
     @Transactional(propagation = Propagation.MANDATORY)
-    public void accrue(Long memberId, Payment payment, int amount) {
-        apply(lockMember(memberId), payment, ACCRUE, amount);
+    public void earn(Long memberId, Payment payment, int amount) {
+        apply(lockMember(memberId), payment, EARN, amount);
     }
 
     // 환불 시 사용했던 포인트를 되돌려준다.
     @Transactional(propagation = Propagation.MANDATORY)
-    public void restoreUsed(Long memberId, Payment payment, int amount) {
-        apply(lockMember(memberId), payment, RESTORE_USED, amount);
+    public void restoreUse(Long memberId, Payment payment, int amount) {
+        apply(lockMember(memberId), payment, USE_RESTORE, amount);
     }
 
     // 환불 시 적립분 회수. 잔액 검증을 하지 않는다 (음수 잔액 허용 정책 — 이후 적립과 상계됨).
     @Transactional(propagation = Propagation.MANDATORY)
-    public void reclaim(Long memberId, Payment payment, int amount) {
-        apply(lockMember(memberId), payment, RECLAIM, amount);
+    public void revokeEarn(Long memberId, Payment payment, int amount) {
+        apply(lockMember(memberId), payment, EARN_REVOKE, amount);
     }
 
     // 잔액 갱신과 원장 기록을 한 몸으로 묶는다. 둘 중 하나만 실행되면 정합성이 깨지므로 통로를 하나로 좁혔다.
     private void apply(Member member, Payment payment, PointTransactionType type, int amount) {
-        int signed = type.applySign(amount);
-        int balanceAfter = member.getPointBalance() + signed;
-
-        member.addPoint(signed);
+        member.addPoint(type.applySign(amount));
         pointTransactionRepository.save(
-                PointTransaction.record(member, payment, type, amount, balanceAfter)
+                PointTransaction.record(member, payment, type, amount)
         );
     }
 

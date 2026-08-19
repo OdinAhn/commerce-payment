@@ -6,6 +6,6 @@ import org.example.commercepayment.domain.member.entity.Member;
 public record PointBalanceResponse(int balance) {
 
     public static PointBalanceResponse from(Member member) {
-        return new PointBalanceResponse(member.getPointBalance());
+        return new PointBalanceResponse(member.getPoint());
     }
 }

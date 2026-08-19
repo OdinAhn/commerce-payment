@@ -69,7 +69,7 @@ public class OrderFacade {
                 .mapToInt(CheckoutResponse.CheckoutItemResponse::subtotal)
                 .sum();
 
-        return new CheckoutResponse(items, totalPrice, member.getPointBalance());
+        return new CheckoutResponse(items, totalPrice, member.getPoint());
     }
 
     // 주문 생성
@@ -114,7 +114,7 @@ public class OrderFacade {
         if (usePoint > totalPrice) {
             throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
         }
-        if (member.getPointBalance() < usePoint) {
+        if (member.getPoint() < usePoint) {
             throw new BusinessException(ErrorCode.INSUFFICIENT_POINT_BALANCE);
         }
         // 4. 주문 저장
@@ -143,12 +143,12 @@ public class OrderFacade {
         validateOwner(order, memberId);
 
         // 결제 대기 아닌거 거르기
-        if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {
+        if (order.getStatus() != OrderStatus.PAYMENT_PENDING) {
             throw new BusinessException(ErrorCode.ORDER_NOT_CANCELABLE);
         }
 
         // 상태 전이_취소된 주문은 막힘
-        order.transitTo(OrderStatus.CANCELLED);
+        order.transitTo(OrderStatus.CANCELED);
         paymentService.markFailed(orderId);
 
         // 선차감 재고 복구

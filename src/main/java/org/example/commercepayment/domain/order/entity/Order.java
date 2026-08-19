@@ -27,16 +27,16 @@ public class Order extends BaseTimeEntity {
     private Long id;
 
     // 노출용 주문번호 (DB PK와 분리). PK를 그대로 노출하면 주문량이 추측되고 남의 주문 ID도 찍기 쉽다.
-    @Column(name = "order_number", nullable = false, unique = true, length = 50)
+    @Column(name = "order_number", nullable = false, unique = true, length = 100)
     private String orderNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    // 주문 총액
-    @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    // 주문 총액 (DDL 컬럼명: total_amount)
+    @Column(name = "total_amount", nullable = false)
+    private int totalAmount;
 
     // 사용 포인트(스냅샷_주문시). 실제 차감은 결제 확정 시점이고 여기서는 기록
     @Column(name = "used_point", nullable = false)
@@ -45,7 +45,7 @@ public class Order extends BaseTimeEntity {
     // 신규 생성은 결제 대기
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private OrderStatus status = OrderStatus.PENDING_PAYMENT;
+    private OrderStatus status = OrderStatus.PAYMENT_PENDING;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -62,7 +62,7 @@ public class Order extends BaseTimeEntity {
         this.orderNumber = generateOrderNumber();
         orderItems.forEach(this::addOrderItem);
         // 합계를 직접 계산. 외부에서 받으면 금액이 달라도 검증할 방법이 없음.
-        this.totalPrice = this.orderItems.stream()
+        this.totalAmount = this.orderItems.stream()
                 .mapToInt(OrderItem::getSubtotal)
                 .sum();
     }
@@ -80,7 +80,7 @@ public class Order extends BaseTimeEntity {
 
     // PG 실결제 금액. 0이면 PG 호출 생략
     public int getPgAmount() {
-        return this.totalPrice - this.usedPoint;
+        return this.totalAmount - this.usedPoint;
     }
 
     public Long getMemberId() {
