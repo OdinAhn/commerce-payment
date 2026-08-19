@@ -85,8 +85,6 @@
             CANCELED: { label: '취소됨', color: 'text-gray-600 bg-gray-100' }
         };
 
-        const sc = statusConfig[order.status] || statusConfig.PAYMENT_PENDING;
-
         document.addEventListener('DOMContentLoaded', function() {
             if (!requireAuth()) return;
             loadOrderDetail();
@@ -103,7 +101,7 @@
                 document.title = `주문 #${order.orderId} | SpartaFashion`;
 
                 document.getElementById('order-id-display').textContent = `주문번호 #${order.orderId}`;
-                const sc = statusConfig[order.status] || statusConfig.PENDING_PAYMENT;
+                const sc = statusConfig[order.status] || statusConfig.PAYMENT_PENDING;
                 const badge = document.getElementById('status-badge');
                 badge.textContent = sc.label;
                 badge.className = `self-start px-5 py-2 rounded-full text-xs font-medium ${sc.color}`;
