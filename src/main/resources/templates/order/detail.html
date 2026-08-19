@@ -80,10 +80,12 @@
 
     <script>
         const statusConfig = {
-            PENDING_PAYMENT: { label: '결제 대기', color: 'text-amber-600 bg-amber-50' },
-            CONFIRMED: { label: '주문 확정', color: 'text-emerald-600 bg-emerald-50' },
-            CANCELLED: { label: '취소됨', color: 'text-gray-600 bg-gray-100' }
+            PAYMENT_PENDING: { label: '결제 대기', color: 'text-amber-600 bg-amber-50' },
+            COMPLETED: { label: '주문 확정', color: 'text-emerald-600 bg-emerald-50' },
+            CANCELED: { label: '취소됨', color: 'text-gray-600 bg-gray-100' }
         };
+
+        const sc = statusConfig[order.status] || statusConfig.PAYMENT_PENDING;
 
         document.addEventListener('DOMContentLoaded', function() {
             if (!requireAuth()) return;
