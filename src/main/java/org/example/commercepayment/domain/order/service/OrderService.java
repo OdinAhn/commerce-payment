@@ -67,5 +67,25 @@ public class OrderService {
                 order.getCreatedAt(),
                 items);
     }
+
+    // paymentId로 주문 조회_환불용
+    public Order findOrderByPaymentId(Long paymentId) {
+
+        return orderRepository.findByPaymentIdWithOrderItems(paymentId).orElseThrow(
+                () -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+    }
+
+    // 결제 건의 주문 상품 목록
+    public List<OrderItem> findOrderItemsByPaymentId(Long paymentId) {
+
+        return findOrderByPaymentId(paymentId).getOrderItems();
+    }
+
+    // 총 주문 수량의 합
+    public int getTotalQuantityByPaymentId(Long paymentId) {
+
+        return findOrderByPaymentId(paymentId).getTotalQuantity();
+    }
+
 }
 

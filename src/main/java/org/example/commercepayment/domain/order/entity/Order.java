@@ -113,5 +113,12 @@ public class Order extends BaseTimeEntity {
         return "ORD-" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
                 + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
+
+    // 주문 수량의 총합_부분 환불용?
+    public int getTotalQuantity() {
+        return orderItems.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
+    }
 }
 
