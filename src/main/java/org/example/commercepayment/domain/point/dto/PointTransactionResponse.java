@@ -11,7 +11,6 @@ public record PointTransactionResponse(
         String type,
         String typeDescription,
         int amount,
-        int balanceAfter,
         Long paymentId,
         LocalDateTime createdAt
 ) {
@@ -21,7 +20,6 @@ public record PointTransactionResponse(
                 tx.getTransactionType().name(),
                 tx.getTransactionType().getDescription(),
                 tx.getAmount(),
-                tx.getBalanceAfter(),
                 tx.getPayment() != null ? tx.getPayment().getId() : null,
                 tx.getCreatedAt()
         );

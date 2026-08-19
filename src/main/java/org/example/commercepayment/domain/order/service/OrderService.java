@@ -57,7 +57,7 @@ public class OrderService {
                 order.getId(),
                 order.getOrderNumber(),
                 payment.getId(),
-                order.getTotalPrice(),
+                order.getTotalAmount(),
                 order.getUsedPoint(),
                 payment.getPgAmount(),
                 payment.getAccruedPoint(),
