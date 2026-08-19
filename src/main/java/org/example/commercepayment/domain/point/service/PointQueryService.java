@@ -40,6 +40,6 @@ public class PointQueryService {
     public boolean isBalanceConsistent(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        return member.getPointBalance() == pointTransactionRepository.sumAmountByMemberId(memberId);
+        return member.getPoint() == pointTransactionRepository.sumAmountByMemberId(memberId);
     }
 }

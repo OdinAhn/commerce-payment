@@ -28,9 +28,9 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
-    // point 잔액
-    @Column(name = "point_balance", nullable = false)
-    private int pointBalance = 0; // 신규가입 시 0P로 시작
+    // point 잔액. 환불로 적립분을 회수할 때 음수가 될 수 있으므로 UNSIGNED를 쓰지 않는다.
+    @Column(nullable = false)
+    private int point = 0; // 신규가입 시 0P로 시작
 
     public Member(String email, String password, String name, String phoneNumber) {
         this.email = email;
@@ -42,6 +42,6 @@ public class Member extends BaseTimeEntity {
     // 포인트 잔액 변경 메서드
     // Member는 얼마인지만 알고, 왜 바뀌는지는 PointService에서 처리
     public void addPoint(int signedAmount) {
-        this.pointBalance += signedAmount;
+        this.point += signedAmount;
     }
 }

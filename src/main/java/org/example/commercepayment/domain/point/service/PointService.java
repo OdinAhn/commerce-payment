@@ -31,7 +31,7 @@ public class PointService {
     @Transactional(propagation = Propagation.MANDATORY)
     public void use(Long memberId, Payment payment, int amount) {
         Member member = lockMember(memberId);
-        if (member.getPointBalance() < amount) {
+        if (member.getPoint() < amount) {
             throw new BusinessException(ErrorCode.INSUFFICIENT_POINT_BALANCE);
         }
         apply(member, payment, USE, amount);
@@ -58,7 +58,7 @@ public class PointService {
     // 잔액 갱신과 원장 기록을 한 몸으로 묶는다. 둘 중 하나만 실행되면 정합성이 깨지므로 통로를 하나로 좁혔다.
     private void apply(Member member, Payment payment, PointTransactionType type, int amount) {
         int signed = type.applySign(amount);
-        int balanceAfter = member.getPointBalance() + signed;
+        int balanceAfter = member.getPoint() + signed;
 
         member.addPoint(signed);
         pointTransactionRepository.save(

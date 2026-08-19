@@ -69,7 +69,7 @@ public class OrderFacade {
                 .mapToInt(CheckoutResponse.CheckoutItemResponse::subtotal)
                 .sum();
 
-        return new CheckoutResponse(items, totalPrice, member.getPointBalance());
+        return new CheckoutResponse(items, totalPrice, member.getPoint());
     }
 
     // 주문 생성
@@ -114,7 +114,7 @@ public class OrderFacade {
         if (usePoint > totalPrice) {
             throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
         }
-        if (member.getPointBalance() < usePoint) {
+        if (member.getPoint() < usePoint) {
             throw new BusinessException(ErrorCode.INSUFFICIENT_POINT_BALANCE);
         }
         // 4. 주문 저장

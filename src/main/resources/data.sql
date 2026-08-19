@@ -17,23 +17,23 @@
 
 
 -- ── 회원 ─────────────────────────────────────────────────────
--- point_balance 는 스냅샷이므로 아래 point_transactions 와 값이 반드시 맞아야 한다.
--- (불변식: members.point_balance == SUM(point_transactions.amount))
+-- point 는 스냅샷이므로 아래 point_transactions 와 값이 반드시 맞아야 한다.
+-- (불변식: members.point == SUM(point_transactions.amount))
 
 -- id=1 : 기본 테스트 계정 (50,000P)
-INSERT INTO members (email, password, name, phone_number, point_balance, created_at, updated_at)
+INSERT INTO members (email, password, name, phone_number, point, created_at, updated_at)
 VALUES ('yoshi@test.com',
         '$2b$10$Ep.t/i1/Ni8NTbzpezsmie4K7XjgfswtEkHREyRYuKz9bYGK70ZZq',
         '요시', '010-1111-1111', 50000, NOW(), NOW());
 
 -- id=2 : 타인 자원 접근 테스트용 (403 검증)
-INSERT INTO members (email, password, name, phone_number, point_balance, created_at, updated_at)
+INSERT INTO members (email, password, name, phone_number, point, created_at, updated_at)
 VALUES ('other@test.com',
         '$2b$10$Ep.t/i1/Ni8NTbzpezsmie4K7XjgfswtEkHREyRYuKz9bYGK70ZZq',
         '남의계정', '010-2222-2222', 0, NOW(), NOW());
 
 -- id=3 : 포인트 부족 케이스 테스트용 (1,000P)
-INSERT INTO members (email, password, name, phone_number, point_balance, created_at, updated_at)
+INSERT INTO members (email, password, name, phone_number, point, created_at, updated_at)
 VALUES ('poor@test.com',
         '$2b$10$Ep.t/i1/Ni8NTbzpezsmie4K7XjgfswtEkHREyRYuKz9bYGK70ZZq',
         '빈지갑', '010-3333-3333', 1000, NOW(), NOW());
@@ -97,10 +97,10 @@ INSERT INTO cart_items (cart_id, product_id, quantity, created_at, updated_at) V
 -- [타인 주문]    other 토큰으로 요시 주문 조회            -> 403 ORDER_003
 --
 -- 정합성 검증 쿼리:
---   SELECT m.id, m.point_balance, COALESCE(SUM(pt.amount),0) AS ledger,
---          m.point_balance = COALESCE(SUM(pt.amount),0) AS ok
+--   SELECT m.id, m.point, COALESCE(SUM(pt.amount),0) AS ledger,
+--          m.point = COALESCE(SUM(pt.amount),0) AS ok
 --   FROM members m LEFT JOIN point_transactions pt ON pt.member_id = m.id
---   GROUP BY m.id, m.point_balance;
+--   GROUP BY m.id, m.point;
 --
 -- 재고 확인:
 --   SELECT id, name, stock_quantity FROM products;
