@@ -55,6 +55,11 @@ public class Payment extends BaseTimeEntity {
 
     @Builder
     private Payment(Order order, int amount, int pointUsedAmount) {
+        // 1. 음수 및 총액 초과 포인트 방지 검증 추가
+        if (amount < 0 || pointUsedAmount < 0 || pointUsedAmount > amount) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.order = order;
         this.portonePaymentId = generatePortonePaymentId();
         this.amount = amount;
@@ -65,7 +70,7 @@ public class Payment extends BaseTimeEntity {
     }
 
     private static String generatePortonePaymentId() {
-        return UUID.randomUUID().toString(); 
+        return "pay_" + UUID.randomUUID();
     }
 
     public void complete(int earnedPointAmount) {
@@ -80,8 +85,13 @@ public class Payment extends BaseTimeEntity {
     }
 
     public void cancel() {
+        // 2. 중복 세팅 제거 (changeStatus 내부에서 처리함)
         changeStatus(PaymentStatus.CANCELLED);
-        this.status = PaymentStatus.CANCELLED;
+    }
+
+    // 3. 전액 포인트 결제 여부 확인 메서드 추가
+    public boolean isPointOnly() {
+        return this.pgAmount == 0;
     }
 
     private void changeStatus(PaymentStatus target) {
