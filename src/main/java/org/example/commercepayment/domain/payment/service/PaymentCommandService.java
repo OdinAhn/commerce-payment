@@ -28,10 +28,10 @@ public class PaymentCommandService {
 
         // 포인트를 이미 사용 처리했었다면 복구 (전액 카드 결제라 사용액이 0이면 스킵)
         if (payment.getPointUsedAmount() > 0) {
-            pointService.restoreUsed(order.getMemberId(), payment, payment.getPointUsedAmount());
+            pointService.restoreUse(order.getMemberId(), payment, payment.getPointUsedAmount());
         }
 
-        order.transitTo(OrderStatus.CANCELLED);
+        order.transitTo(OrderStatus.CANCELED);
         order.getOrderItems().forEach(item ->
                 item.getProduct().restoreStock(item.getQuantity()));
     }
@@ -52,10 +52,10 @@ public class PaymentCommandService {
 
         // 포인트 적립 처리 (완료 후 금액 기준)
         if (accruedPoint > 0) {
-            pointService.accrue(order.getMemberId(), payment, accruedPoint);
+            pointService.earn(order.getMemberId(), payment, accruedPoint);
         }
 
-        order.transitTo(OrderStatus.CONFIRMED);
+        order.transitTo(OrderStatus.COMPLETED);
         return PaymentConfirmResponse.from(payment);
     }
 }

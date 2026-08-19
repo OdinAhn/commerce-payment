@@ -149,7 +149,7 @@ public class OrderFacade {
         }
 
         // 상태 전이_취소된 주문은 막힘
-        order.transitTo(OrderStatus.CANCELLED);
+        order.transitTo(OrderStatus.CANCELED);
         Payment payment = paymentService.findByOrderId(orderId); 
         paymentService.failPayment(payment, FailReason.USER_CANCELLED); // 메서드명 변경 필요
 
