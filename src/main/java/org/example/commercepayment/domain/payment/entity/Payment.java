@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.commercepayment.domain.order.entity.Order;
 import org.example.commercepayment.global.entity.BaseTimeEntity;
+import org.example.commercepayment.global.error.BusinessException;
+import org.example.commercepayment.global.error.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -84,9 +86,7 @@ public class Payment extends BaseTimeEntity {
 
     private void changeStatus(PaymentStatus target) {
         if (!this.status.canTransitTo(target)) {
-            throw new IllegalStateException(
-                    "잘못된 결제 상태 전이입니다. 현재 상태: " + this.status + ", 목표 상태: " + target
-            );
+            throw new BusinessException(ErrorCode.INVALID_PAYMENT_STATUS);
         }
         this.status = target;
     }
