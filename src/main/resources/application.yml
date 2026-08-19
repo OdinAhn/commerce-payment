@@ -37,3 +37,9 @@ server:
 jwt:
   secret: "c3BhcnRhLXBheW1lbnQtand0LXNlY3JldC1rZXktZm9yLWJvb3RjYW1wLTIwMjYtdmVyeS1sb25nLXNlY3JldA=="  # Base64 encoded
   expiration: 3600000  # 1시간 (ms)
+  
+portone:
+  base-url: "https://api.portone.io"
+  api-secret: "kwjfvYDdq35AIOKiqtX81g36AHgGowto4Af3YGwruD8BPpBvAmB3qoHePuGZlPohtJw1IjJJdIjKjzHW"
+  store-id: "store-6c5d3170-6080-4f70-aa96-1f2baf8d349a"
+  channel-key: "channel-key-d45e37ea-9034-495a-b691-c223dbf16f12"

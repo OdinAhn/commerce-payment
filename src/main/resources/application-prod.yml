@@ -13,6 +13,7 @@ spring:
 
 # PortOne 결제 연동 정보 (GitHub Secrets에서 주입)
 portone:
-  api:
-    key: ${PORTONE_API_KEY}
-    secret: ${PORTONE_API_SECRET}
+  base-url: "https://api.portone.io"
+  api-secret: ${PORTONE_API_SECRET}
+  store-id: ${PORTONE_STORE_ID}
+  channel-key: ${PORTONE_CHANNEL_KEY}

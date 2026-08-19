@@ -57,7 +57,7 @@ public class OrderService {
                 order.getId(),
                 order.getOrderNumber(),
                 payment.getId(),
-                order.getTotalPrice(),
+                order.getTotalAmount(),
                 order.getUsedPoint(),
                 payment.getPgAmount(),
                 payment.getEarnedPointAmount(), //메서드명 변경
