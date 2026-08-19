@@ -153,7 +153,7 @@
                                     <i class="${v.icon} text-6xl ${v.color}"></i>
                                 </div>
                                 <div class="card-overlay absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent flex flex-col justify-end p-5">
-                                    ${product.stock > 0
+                                    ${product.stock > 0 && product.salesStatus === 'ON_SALE'
                                         ? `<button onclick="event.preventDefault(); addToCart(${product.id})"
                                             class="w-full py-3 bg-white text-black text-xs font-black uppercase tracking-wider rounded-full hover:bg-gray-100 transition-colors">
                                             담기
@@ -162,7 +162,9 @@
                                     }
                                 </div>
                                 ${index < 3 ? '<span class="absolute top-3 left-3 text-[10px] font-black text-white bg-black/80 backdrop-blur-sm px-3 py-1.5 rounded-full">신상</span>' : ''}
-                                ${product.stock <= 5 && product.stock > 0
+                                ${product.salesStatus !== 'ON_SALE'
+                                    ? `<span class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm"><span class="text-sm font-black text-gray-900 tracking-wider">${product.stock <= 0 ? '품절' : '판매종료'}</span></span>`
+                                    : product.stock <= 5 && product.stock > 0
                                     ? '<span class="absolute top-3 right-3 text-[10px] font-black text-white bg-red-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">마감임박</span>'
                                     : product.stock <= 0
                                     ? '<span class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm"><span class="text-sm font-black text-gray-900 tracking-wider">품절</span></span>'

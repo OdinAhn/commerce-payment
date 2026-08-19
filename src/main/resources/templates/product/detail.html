@@ -125,8 +125,12 @@
                 const icon = document.getElementById('product-icon');
                 icon.className = `${v.icon} text-9xl ${v.color} group-hover:brightness-110 transition-all duration-300`;
 
+                const isPurchasable = product.stock > 0 && product.salesStatus === 'ON_SALE';
+
                 const stockSection = document.getElementById('stock-section');
-                if (product.stock > 10) {
+                if (product.salesStatus !== 'ON_SALE') {
+                    stockSection.innerHTML = `<div class="inline-flex items-center gap-2 text-xs font-black text-gray-500"><span class="inline-block w-2 h-2 bg-gray-400 rounded-full"></span> 판매 종료된 상품입니다</div>`;
+                } else if (product.stock > 10) {
                     stockSection.innerHTML = `<div class="inline-flex items-center gap-2 text-xs font-black text-emerald-700"><span class="inline-block w-2 h-2 bg-emerald-500 rounded-full"></span> 재고 ${product.stock}개</div>`;
                 } else if (product.stock > 0) {
                     stockSection.innerHTML = `<div class="inline-flex items-center gap-2 text-xs font-black text-amber-700"><span class="inline-block w-2 h-2 bg-amber-500 rounded-full"></span> 남은 재고 ${product.stock}개</div>`;
@@ -135,7 +139,7 @@
                 }
 
                 const qtySection = document.getElementById('quantity-section');
-                if (product.stock > 0) {
+                if (isPurchasable) {
                     qtySection.innerHTML = `
                         <label class="block text-xs font-black text-gray-900 tracking-widest mb-3">수량</label>
                         <div class="inline-flex items-center border-2 border-gray-900 rounded-lg overflow-hidden">
@@ -151,16 +155,17 @@
                 }
 
                 const actionSection = document.getElementById('action-section');
-                if (product.stock > 0) {
+                if (isPurchasable) {
                     actionSection.innerHTML = `
                         <button onclick="addToCartDetail(${product.id})" id="btn-add-cart"
                                 class="w-full flex items-center justify-center gap-2 px-8 py-4 bg-black text-white font-black text-sm uppercase tracking-wide rounded-lg hover:bg-gray-900 transition-all">
                             장바구니 담기
                         </button>`;
                 } else {
+                    const label = product.salesStatus !== 'ON_SALE' ? '판매 종료' : '품절';
                     actionSection.innerHTML = `
                         <button disabled class="w-full py-4 bg-gray-200 text-gray-400 font-black text-sm uppercase tracking-wide rounded-lg cursor-not-allowed">
-                            품절
+                            ${label}
                         </button>`;
                 }
 

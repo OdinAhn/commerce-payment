@@ -53,6 +53,13 @@ public class Product extends BaseTimeEntity {
         this.salesStatus = salesStatus;
     }
 
+    // 판매 중(ON_SALE)이 아닌 상품(품절/단종)은 장바구니에 담을 수 없도록 검증
+    public void validateOnSale() {
+        if (!"ON_SALE".equals(this.salesStatus)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_ON_SALE);
+        }
+    }
+
     // 비즈니스 로직: 재고 변경 시 자동으로 상태 업데이트
     public void deductStock(int quantity) {
         if (quantity <= 0) {

@@ -24,6 +24,7 @@ public class CartFacade {
     public Long addItem(Long memberId, AddCartRequest request) {
         Member member = memberService.findById(memberId);
         Product product = productService.findProductEntity(request.productId());
+        product.validateOnSale();
 
         // 회원의 장바구니를 찾거나 없으면 새로 생성합니다.
         Cart cart = cartRepository.findByMemberId(member.getId())
