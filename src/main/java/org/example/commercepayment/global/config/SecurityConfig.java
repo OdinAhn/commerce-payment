@@ -56,8 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/signup", "/products/**", "/cart", "/orders/**", "/checkout").permitAll()
                         .requestMatchers("/api/auth/**", "/api/products/**", "/api/webhooks/**", "/api/config/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        //.anyRequest().authenticated()
-                        .anyRequest().permitAll() // 개발 중 임시로 전체 허용
+                        .anyRequest().authenticated()
                 )
 
                 // 컨트롤러 진입 전, JwtAuthFilter가 Authorization 헤더에서 토큰을 꺼내 검증한다.
