@@ -1,6 +1,8 @@
 spring:
   application:
     name: commerce-payment
+  profiles:
+    active: local
 
   datasource:
     url: jdbc:mysql://localhost:3306/payment_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

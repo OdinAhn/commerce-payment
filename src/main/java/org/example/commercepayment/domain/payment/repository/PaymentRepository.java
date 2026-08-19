@@ -10,7 +10,29 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    Optional<Payment> findByOrder_Id(Long orderId);
-    List<Payment> findAllByOrder_IdIn(List<Long> orderIds);
-}
+    // 주문 단건 조회 화면 - 결제 ID만
+    @Query("SELECT p.id FROM Payment p WHERE p.order.id = :orderId")
+    Optional<Long> findIdByOrderId(@Param("orderId") Long orderId);
 
+    // 주문 목록 조회 - N+1 방지
+    @Query("""
+        SELECT p.order.id, p.id
+        FROM Payment p
+        WHERE p.order.id IN :orderIds
+    """)
+    List<Object[]> findIdsByOrderIds(@Param("orderIds") List<Long> orderIds);
+
+    // 결제 확정 - portonePaymentId 기준 조회
+    Optional<Payment> findByPortonePaymentId(String portonePaymentId);
+
+    // 결제 확정 - orderId 기준 조회 (Order fetch join)
+    @Query("SELECT p FROM Payment p JOIN FETCH p.order WHERE p.order.id = :orderId")
+    Optional<Payment> findByOrderIdWithOrder(@Param("orderId") Long orderId);
+
+    // 결제 상세 조회 - paymentId 기준 (Order fetch join)
+    @Query("SELECT p FROM Payment p JOIN FETCH p.order WHERE p.id = :paymentId")
+    Optional<Payment> findByIdWithOrder(@Param("paymentId") Long paymentId);
+
+    @Query("SELECT p FROM Payment p JOIN FETCH p.order WHERE p.order.id IN :orderIds")
+    List<Payment> findByOrderIdIn(@Param("orderIds") List<Long> orderIds);
+}

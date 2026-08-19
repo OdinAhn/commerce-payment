@@ -10,6 +10,7 @@ import org.example.commercepayment.domain.order.entity.Order;
 import org.example.commercepayment.domain.order.entity.OrderItem;
 import org.example.commercepayment.domain.order.entity.OrderStatus;
 import org.example.commercepayment.domain.order.service.OrderService;
+import org.example.commercepayment.domain.payment.entity.FailReason;
 import org.example.commercepayment.domain.payment.entity.Payment;
 import org.example.commercepayment.domain.payment.service.PaymentService;
 import org.example.commercepayment.domain.product.entity.Product;
@@ -148,8 +149,9 @@ public class OrderFacade {
         }
 
         // 상태 전이_취소된 주문은 막힘
-        order.transitTo(OrderStatus.CANCELED);
-        paymentService.markFailed(orderId);
+        order.transitTo(OrderStatus.CANCELLED);
+        Payment payment = paymentService.findByOrderId(orderId); 
+        paymentService.failPayment(payment, FailReason.USER_CANCELLED); // 메서드명 변경 필요
 
         // 선차감 재고 복구
         order.getOrderItems().forEach(item ->

@@ -57,10 +57,10 @@ public class OrderService {
                 order.getId(),
                 order.getOrderNumber(),
                 payment.getId(),
-                order.getTotalAmount(),
+                order.getTotalPrice(),
                 order.getUsedPoint(),
                 payment.getPgAmount(),
-                payment.getAccruedPoint(),
+                payment.getEarnedPointAmount(), //메서드명 변경
                 order.getStatus().name(),
                 payment.getStatus().name(),
                 order.getOrderName(),
