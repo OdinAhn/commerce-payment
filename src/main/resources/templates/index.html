@@ -132,8 +132,7 @@
 
         async function loadProducts() {
             try {
-                const res = await apiFetch('/api/products');
-                const products = res.data || [];
+                const products = await apiFetch('/api/products') || [];
                 document.getElementById('product-loading').classList.add('hidden');
 
                 if (!products || products.length === 0) {
