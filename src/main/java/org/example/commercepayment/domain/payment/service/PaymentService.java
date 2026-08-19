@@ -5,6 +5,8 @@ import org.example.commercepayment.domain.payment.entity.FailReason;
 import org.example.commercepayment.domain.payment.entity.Payment;
 import org.example.commercepayment.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.example.commercepayment.global.error.BusinessException;
+import org.example.commercepayment.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,7 @@ public class PaymentService {
 
     public Payment findByOrderIdWithOrder(Long orderId) {
         return paymentRepository.findByOrderIdWithOrder(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다. orderId=" + orderId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
     }
 
     public Payment findByOrderId(Long orderId) {
@@ -41,38 +43,35 @@ public class PaymentService {
 
     public Payment findByIdWithOrder(Long paymentId) {
         return paymentRepository.findByIdWithOrder(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다. paymentId=" + paymentId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
     }
 
     public Payment findByPortonePaymentId(String portonePaymentId) {
         return paymentRepository.findByPortonePaymentId(portonePaymentId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다. portonePaymentId=" + portonePaymentId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
     }
 
+    // 결제 완료 처리
     @Transactional
     public void completePayment(Payment payment, int accruedPoint) {
         payment.complete(accruedPoint);
     }
 
+    // 결제 실패 처리 (상세 사유 지정)
     @Transactional
     public void failPayment(Payment payment, FailReason reason) {
         payment.fail(reason);
     }
 
-    @Transactional
-    public void markFailed(Long orderId) {
-        Payment payment = findByOrderId(orderId);
-        payment.fail(FailReason.USER_CANCELLED);
-    }
-
+    // 결제 상태 변경(Canceled)
     @Transactional
     public void cancelPayment(Payment payment) {
         payment.cancel();
     }
 
-//    public Map<Long, Payment> findPaymentMapByOrderIds(List<Long> orderIds) {
-//        if (orderIds.isEmpty()) return Map.of();
-//        return paymentRepository.findByOrderIdIn(orderIds).stream()
-//                .collect(Collectors.toMap(p -> p.getOrder().getId(), p -> p));
-//    }
+    public Map<Long, Payment> findPaymentMapByOrderIds(List<Long> orderIds) {
+        if (orderIds.isEmpty()) return Map.of();
+        return paymentRepository.findByOrderIdIn(orderIds).stream()
+                .collect(Collectors.toMap(p -> p.getOrder().getId(), p -> p));
+    }
 }

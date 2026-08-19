@@ -9,6 +9,7 @@ import org.example.commercepayment.domain.payment.service.PaymentService;
 import org.example.commercepayment.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,11 +22,13 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public ApiResponse<PaymentConfirmResponse> confirm(
-            @RequestAttribute Long memberId,   
+            @AuthenticationPrincipal Long memberId,  
             @Valid @RequestBody PaymentConfirmRequest request
     ) {
         return ApiResponse.ok(paymentFacade.confirmPayment(memberId, request));
     }
+    
+
 
     @PostMapping("/{id}/cancel")
     public ApiResponse<Void> cancel(@PathVariable Long id) {

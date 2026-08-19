@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.commercepayment.domain.order.entity.Order;
-import org.example.commercepayment.global.entity.BaseEntity;
+import org.example.commercepayment.global.entity.BaseTimeEntity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "payments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment extends BaseEntity {
+public class Payment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,7 +74,6 @@ public class Payment extends BaseEntity {
 
     public void fail(FailReason reason) {
         changeStatus(PaymentStatus.FAILED);
-        this.status = PaymentStatus.FAILED;
         this.failReason = reason;
     }
 
