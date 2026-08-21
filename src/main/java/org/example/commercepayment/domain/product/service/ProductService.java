@@ -5,6 +5,8 @@ import org.example.commercepayment.domain.product.dto.ProductPageResponse;
 import org.example.commercepayment.domain.product.dto.ProductResponse;
 import org.example.commercepayment.domain.product.entity.Product;
 import org.example.commercepayment.domain.product.repository.ProductRepository;
+import org.example.commercepayment.global.error.BusinessException;
+import org.example.commercepayment.global.error.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,7 +70,7 @@ public class ProductService {
 
     public Product findProductEntity(Long id) {
         return productRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("상품을 찾을 수 없습니다.")
+                () -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
         );
     }
 
